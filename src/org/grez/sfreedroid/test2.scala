@@ -81,8 +81,11 @@ object test2   {
       val flatCordMapX = mx / DEF_WIDTH;
       val flatCordMapY = my / DEF_HEIGHT;
 
+      val localMX = mx % DEF_WIDTH;
+      val localMY = my % DEF_HEIGHT;
+
       val selectedX = flatCordMapX;
-      val selectedY = flatCordMapY;
+      val selectedY = flatCordMapY*2+1;
 
       if (Mouse.isButtonDown(0)){
 
@@ -118,10 +121,12 @@ object test2   {
 
       }
       printb = false;
-      MapManager.drawGrid(selectedX,selectedY);
-      FontManager.drawText(825,30,"mouseX="+mx, "ArialGold");
-      FontManager.drawText(825,60,"mouseY="+my, "ArialGold");
-      FontManager.drawText(825,90,"flat: ["+selectedX+","+selectedY+"]", "ArialGold");
+      MapManager.drawGrid(flatCordMapX,flatCordMapY);
+      FontManager.drawText(800,30,"mouseX="+mx, "ArialGold");
+      FontManager.drawText(800,60,"mouseY="+my, "ArialGold");
+      FontManager.drawText(800,90,"local: ["+localMX+","+localMY+"]", "ArialGold");
+      FontManager.drawText(800,120,"flat: ["+flatCordMapX+","+flatCordMapY+"]", "ArialGold");
+      FontManager.drawText(800,150,"selected: ["+selectedX+","+selectedY+"]", "ArialGold");
 
       //glColor4f(0.1f,1.0f,1.0f,1.0f)
 

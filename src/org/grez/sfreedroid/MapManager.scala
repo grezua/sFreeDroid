@@ -20,7 +20,7 @@ import org.grez.sfreedroid.textures.Rect
 
 object MapDefaults {
   val SIZE_X = 8;
-  val SIZE_Y = 16;
+  val SIZE_Y = 18;
   val NUM_OF_IDS = 40;
   val DEF_WIDTH = 134;
   val DEF_HEIGHT = 94;
