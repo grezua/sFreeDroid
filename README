@@ -1,3 +1,5 @@
-This file w as created by IntelliJ IDEA 10.5.2 for binding GitHub  repository
-test1
-test2
+scala + opengl (lwjgl) + freedroid sources.
+
+-Initially this is "play with" repo.
+-I'm learning scala and opengl at the same time :-)
+-I'm going to use freedroid (www.freedroid.org) resources, as well as read it's source code.
