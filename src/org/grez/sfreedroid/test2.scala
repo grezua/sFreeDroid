@@ -55,17 +55,19 @@ object test2   {
     val textureIDBuffer:IntBuffer = BufferUtils.createIntBuffer(MapManager.allTestData.size);
     glGenTextures(textureIDBuffer);
 
-    val allTestTex: List[Texture] = (for (i <-0 to MapManager.allTestData.size -1) yield new Texture(MapManager.allTestData(i), textureIDBuffer.get(i))).toList;
+    //val allTestTex: List[Texture] = (for (i <-0 to MapManager.allTestData.size -1) yield new Texture(MapManager.allTestData(i), textureIDBuffer.get(i))).toList;
 
     var finished = false;
 
 //    imgLoader.allTestData.foreach( (d: ImgData) => println("w:  "+ d.w + "; h: "+ d.h + " ; offsetX:"+d.offsetX+"; offsetY: "+d.offsetY));
-//    print( mapa);
+
 
     var printb = true;
 
     def draw(x: Float,y: Float,id: Int) {
-          allTestTex(id).draw(x,y);
+      val mt = MapManager.allTestData(id);
+          //mt.tx.draw(x,y);
+          //mt.tx.draw(x+mt.offsetX*0.5f,y+mt.offsetY*0.5f);
     }
 
     def mapaClck(x:Int, y:Int){
@@ -117,7 +119,7 @@ object test2   {
         curY = (DEF_HEIGHT /2 * y) - (DEF_HEIGHT / 2);
       }
         draw(curX,curY,MapManager.mapa(x)(y))
-        if (printb) println(isOdd(y), "; x: ",curX, "; y: ",curY);
+       // if (printb) println(isOdd(y), "; x: ",curX, "; y: ",curY);
 
       }
       printb = false;

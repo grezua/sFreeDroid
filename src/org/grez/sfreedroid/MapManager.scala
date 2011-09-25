@@ -4,11 +4,11 @@ import java.io.{FileInputStream, InputStream}
 import com.twl.PNGDecoder
 import java.nio.ByteBuffer
 import io.Source
-import textures.ImgData
 import org.lwjgl.util.Point
 import org.lwjgl.opengl.GL11._
+import textures.{Texture, ImageLoad, ImgData, Rect}
 import util.Random
-import org.grez.sfreedroid.textures.Rect
+import utils.FileUtils
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,51 +23,51 @@ object MapDefaults {
   val SIZE_Y = 18;
   val NUM_OF_IDS = 40;
   val DEF_WIDTH = 134;
-  val DEF_HEIGHT = 94;
+  val DEF_HEIGHT = 66;
+}
+
+case class MapTile (name: String, tx: Texture,  offsetX: Int = 0, offsetY: Int = 0  ){
+  println(name + "{ w:"+tx.widt+"; h:"+tx.heg+"; ox:"+offsetX+"; oy:"+offsetY+"}");
 }
 
 object MapManager {
-    import MapDefaults._;
 
-    def genTestData(fn: String): ImgData = {
-    val pngEnding = ".png";
-    val offsetEnding = ".offset"
-    println(fn);
+  import MapDefaults._;
 
-    val is: InputStream = new FileInputStream(fn + pngEnding);
-    val decoder: PNGDecoder = new PNGDecoder(is);
-    val buf: ByteBuffer = ByteBuffer.allocateDirect(4 * decoder.getWidth * decoder.getHeight);
-    decoder.decode(buf, decoder.getWidth * 4, PNGDecoder.Format.RGBA);
-    buf.flip();
-    is.close();
-
-
-    val src =  Source.fromFile(fn+offsetEnding);
+  private def getOffsets(fn: String): (Int, Int) = {
+    val src = Source.fromFile(fn );
     val offsetTxtLines = src.getLines();
 
-    def getStrFromLines(str:String):Int = {
+    def getStrFromLines(str: String): Int = {
       val xStr = offsetTxtLines.find(_.contains(str));
-      if (xStr.isEmpty) 0 else Integer.parseInt(xStr.get.substring(str.length(),xStr.get.length()))
+      if (xStr.isEmpty) 0 else Integer.parseInt(xStr.get.substring(str.length(), xStr.get.length()))
     }
 
     val offsetX = getStrFromLines("OffsetX=");
     val offsetY = getStrFromLines("OffsetY=");
 
-//    println("xStr: " + offsetX+ "; yStr="+offsetY);
-
     src.close();
 
-    return new ImgData(buf, decoder.getHeight, decoder.getWidth, decoder.hasAlpha);
+    (offsetX,offsetY);
+  }
+
+  def genTestData(fn: String): MapTile = {
+    val pngEnding = ".png";
+    val offsetEnding = ".offset"
+
+    val imgData = ImageLoad.loadImgFile(fn+pngEnding);
+    val offsets = getOffsets(fn +offsetEnding);
+
+    return MapTile(FileUtils.getFileNameWithoutDirAndExt(fn+pngEnding), new Texture(imgData), offsets._1,offsets._2);
   }
 
 
-  lazy val allTestData: List[ImgData] = generateNames().map(genTestData(_));
+  lazy val allTestData: List[MapTile] = generateNames().map(genTestData(_));
 
   def generateNames(): List[String] = {
-
     def addLeadingZeroes(v: String): String = {
       if (v.length() < 4) {
-        return addLeadingZeroes("0"+v);
+        return addLeadingZeroes("0" + v);
       };
       v
     }
@@ -75,22 +75,22 @@ object MapManager {
 
 
     def genList(base: String, To: Int): List[String] = {
-        (for {i <- 1 to  To} yield base+addLeadingZeroes(i.toString)).toList;
+      (for {i <- 1 to To} yield base + addLeadingZeroes(i.toString)).toList;
     }
 
-    val base =  "./graphics/flor/iso_sidewalk_";  // "./graphics/flor/iso_carpet_tile_" ;
+    val base = "./graphics/flor/iso_sidewalk_"; // "./graphics/flor/iso_carpet_tile_" ;
     val base1 = "./graphics/flor/iso_miscellaneous_floor_"
 
-    genList(base, 24):::genList(base1,23);
+    genList(base, 24) ::: genList(base1, 23);
   }
 
-    def getMapRect(x:Int, y:Int):Rect = {
-    val pt = (zx: Int, zy:Int)=>new Point(zx,zy);
-    val lx = x*DEF_WIDTH;
-    val rx = lx+ DEF_WIDTH;
-    val ty= y*DEF_HEIGHT;
-    val by = ty+DEF_HEIGHT;
-    Rect(leftTop = pt(lx,ty), rightTop = pt(rx,ty), rightBottom = pt(rx,by), leftBottom = pt (lx,by));
+  def getMapRect(x: Int, y: Int): Rect = {
+    val pt = (zx: Int, zy: Int) => new Point(zx, zy);
+    val lx = x * DEF_WIDTH;
+    val rx = lx + DEF_WIDTH;
+    val ty = y * DEF_HEIGHT;
+    val by = ty + DEF_HEIGHT;
+    Rect(leftTop = pt(lx, ty), rightTop = pt(rx, ty), rightBottom = pt(rx, by), leftBottom = pt(lx, by));
   }
 
   /*def drawSelectedMapCell(selectedX: Int, selectedY: Int){
@@ -99,7 +99,7 @@ object MapManager {
 
   def drawGrid(selectedX: Int, selectedY: Int) {
     glDisable(GL_TEXTURE_2D)
-    glColor3f(1.0f,0f,1.0f);
+    glColor3f(1.0f, 0f, 1.0f);
     glShadeModel(GL_FLAT);
     glBegin(GL_LINES);
     for (i <- 0 to SIZE_X) {
@@ -109,12 +109,12 @@ object MapManager {
     }
     for (j <- 0 to SIZE_Y) {
       val curY = j * DEF_HEIGHT;
-      glVertex2i(0,curY);
+      glVertex2i(0, curY);
       glVertex2i(1024, curY);
     }
 
-    glColor3f(1.0f,1.0f,0.0f);
-    val selectedRect = getMapRect(selectedX,selectedY);
+    glColor3f(1.0f, 1.0f, 0.0f);
+    val selectedRect = getMapRect(selectedX, selectedY);
     glVertex2i(selectedRect.leftTop.getX, selectedRect.leftTop.getY);
     glVertex2i(selectedRect.rightTop.getX, selectedRect.rightTop.getY);
 
@@ -133,8 +133,8 @@ object MapManager {
   }
 
   lazy val mapa: Array[Array[Int]] = {
-    val r: Array[Array[Int]] = Array.ofDim(SIZE_X,SIZE_Y);
-    for {k <-0 until  SIZE_X; j <-0 until   SIZE_Y} r(k)(j) = Random.nextInt(NUM_OF_IDS);
+    val r: Array[Array[Int]] = Array.ofDim(SIZE_X, SIZE_Y);
+    for {k <- 0 until SIZE_X; j <- 0 until SIZE_Y} r(k)(j) = Random.nextInt(NUM_OF_IDS);
     r;
   };
 }
