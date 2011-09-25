@@ -66,7 +66,7 @@ object test2   {
 
     def draw(x: Float,y: Float,id: Int) {
       val mt = MapManager.allTestData(id);
-          //mt.tx.draw(x,y);
+          mt.tx.draw(x,y);
           //mt.tx.draw(x+mt.offsetX*0.5f,y+mt.offsetY*0.5f);
     }
 
@@ -123,7 +123,7 @@ object test2   {
 
       }
       printb = false;
-      MapManager.drawGrid(flatCordMapX,flatCordMapY);
+      MapManager.drawGrid(selectedX,selectedY,flatCordMapX,flatCordMapY);
       FontManager.drawText(800,30,"mouseX="+mx, "ArialGold");
       FontManager.drawText(800,60,"mouseY="+my, "ArialGold");
       FontManager.drawText(800,90,"local: ["+localMX+","+localMY+"]", "ArialGold");

@@ -1,8 +1,5 @@
 package org.grez.sfreedroid
 
-import java.io.{FileInputStream, InputStream}
-import com.twl.PNGDecoder
-import java.nio.ByteBuffer
 import io.Source
 import org.lwjgl.util.Point
 import org.lwjgl.opengl.GL11._
@@ -93,11 +90,37 @@ object MapManager {
     Rect(leftTop = pt(lx, ty), rightTop = pt(rx, ty), rightBottom = pt(rx, by), leftBottom = pt(lx, by));
   }
 
+  def getTileRect(x: Int, y: Int): Rect = {
+    val pt = (zx: Int, zy: Int) => new Point(zx, zy);
+
+    val lx = x * DEF_WIDTH
+    val mx = lx + (DEF_WIDTH /2);
+    val rx = lx + DEF_WIDTH;
+    val ty = y * DEF_HEIGHT;
+    val my = ty + (DEF_HEIGHT /2);
+    val by = ty + DEF_HEIGHT;
+    Rect(leftTop = pt(lx, my), rightTop = pt(mx, ty), rightBottom = pt(rx, my), leftBottom = pt(mx, by));
+  }
+
   /*def drawSelectedMapCell(selectedX: Int, selectedY: Int){
 
   }*/
 
-  def drawGrid(selectedX: Int, selectedY: Int) {
+  def drawRect (r: Rect) {
+     glVertex2i(r.leftTop.getX, r.leftTop.getY);
+    glVertex2i(r.rightTop.getX, r.rightTop.getY);
+
+    glVertex2i(r.rightTop.getX, r.rightTop.getY);
+    glVertex2i(r.rightBottom.getX, r.rightBottom.getY);
+
+    glVertex2i(r.rightBottom.getX, r.rightBottom.getY);
+    glVertex2i(r.leftBottom.getX, r.leftBottom.getY);
+
+    glVertex2i(r.leftBottom.getX, r.leftBottom.getY);
+    glVertex2i(r.leftTop.getX, r.leftTop.getY);
+  }
+
+  def drawGrid(selectedX: Int, selectedY: Int, flatX:Int, flatY:Int) {
     glDisable(GL_TEXTURE_2D)
     glColor3f(1.0f, 0f, 1.0f);
     glShadeModel(GL_FLAT);
@@ -113,19 +136,33 @@ object MapManager {
       glVertex2i(1024, curY);
     }
 
+    glColor3f(0.0f, 0.0f, 0.0f);
+
+    val yHlf = DEF_HEIGHT /2;
+    val xHlf = DEF_WIDTH /2;
+    val outScreenX = SIZE_X*DEF_WIDTH;
+
+    for (i <- 0 to SIZE_X + 10) {
+      val curY =  (i * DEF_HEIGHT + yHlf) ;
+      val curX = (outScreenX)- ( i * DEF_WIDTH + xHlf);
+      glVertex2i(curX, 0);
+      glVertex2i(outScreenX, curY);
+    }
+
+    for (j <- 0 to SIZE_Y) {
+      val curY = j * DEF_HEIGHT + yHlf ;
+      val curX = j * DEF_WIDTH + xHlf;
+      glVertex2i(0, curY);
+      glVertex2i(curX, 0);
+    }
+
     glColor3f(1.0f, 1.0f, 0.0f);
-    val selectedRect = getMapRect(selectedX, selectedY);
-    glVertex2i(selectedRect.leftTop.getX, selectedRect.leftTop.getY);
-    glVertex2i(selectedRect.rightTop.getX, selectedRect.rightTop.getY);
+    drawRect(getMapRect(flatX, flatY));
+    glColor3f(1f,1f,1f);
+    drawRect(getTileRect(selectedX, selectedY))
 
-    glVertex2i(selectedRect.rightTop.getX, selectedRect.rightTop.getY);
-    glVertex2i(selectedRect.rightBottom.getX, selectedRect.rightBottom.getY);
 
-    glVertex2i(selectedRect.rightBottom.getX, selectedRect.rightBottom.getY);
-    glVertex2i(selectedRect.leftBottom.getX, selectedRect.leftBottom.getY);
 
-    glVertex2i(selectedRect.leftBottom.getX, selectedRect.leftBottom.getY);
-    glVertex2i(selectedRect.leftTop.getX, selectedRect.leftTop.getY);
 
     glEnd();
     glFlush();
