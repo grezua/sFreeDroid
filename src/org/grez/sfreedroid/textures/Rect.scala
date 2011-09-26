@@ -10,4 +10,8 @@ import org.lwjgl.util.Point
  * To change this template use File | Settings | File Templates.
  */
 
-case class Rect (leftTop:Point, rightTop:Point, rightBottom:Point, leftBottom:Point);
+case class Rect (leftTop:Point, rightTop:Point, rightBottom:Point, leftBottom:Point){
+  private def pointToString(p:Point) = "{x="+p.getX+",y="+p.getY+"}"
+
+  override def toString = "lt"+pointToString(leftTop)+" rt"+pointToString(rightTop)+"rb"+pointToString(rightBottom)+"lb"+pointToString(leftBottom);
+}

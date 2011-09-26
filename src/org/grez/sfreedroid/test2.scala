@@ -17,11 +17,13 @@ import opengl.{GL14, Display, GL11, DisplayMode}
 import GL11._
 import java.nio.IntBuffer
 import textures.Texture
+import utils.NumberUtils
 
 object test2   {
 
   def main(args: Array[String]) {
     import MapDefaults._
+    import NumberUtils.isOdd
 
     Display.setTitle("SFreeDroid")
 		Display.setFullscreen(false)
@@ -102,7 +104,7 @@ object test2   {
 
 
 
-      def isOdd(x:Int) = {(x % 2) == 1}
+
 
       var curY = 0;
       var curX = 0;
@@ -123,7 +125,7 @@ object test2   {
 
       }
       printb = false;
-      MapManager.drawGrid(selectedX,selectedY,flatCordMapX,flatCordMapY);
+      MapManager.drawGrid(flatCordMapX,flatCordMapY,flatCordMapX,flatCordMapY);
       FontManager.drawText(800,30,"mouseX="+mx, "ArialGold");
       FontManager.drawText(800,60,"mouseY="+my, "ArialGold");
       FontManager.drawText(800,90,"local: ["+localMX+","+localMY+"]", "ArialGold");

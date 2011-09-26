@@ -1,11 +1,12 @@
 package org.grez.sfreedroid
 
+import font.FontManager
 import io.Source
 import org.lwjgl.util.Point
 import org.lwjgl.opengl.GL11._
 import textures.{Texture, ImageLoad, ImgData, Rect}
 import util.Random
-import utils.FileUtils
+import utils.{NumberUtils, FileUtils}
 
 /**
  * Created by IntelliJ IDEA.
@@ -91,14 +92,20 @@ object MapManager {
   }
 
   def getTileRect(x: Int, y: Int): Rect = {
+    import NumberUtils.isOdd;
     val pt = (zx: Int, zy: Int) => new Point(zx, zy);
+    val halfX = DEF_WIDTH /2;
+    val halfY = DEF_HEIGHT /2
 
-    val lx = x * DEF_WIDTH
-    val mx = lx + (DEF_WIDTH /2);
-    val rx = lx + DEF_WIDTH;
-    val ty = y * DEF_HEIGHT;
-    val my = ty + (DEF_HEIGHT /2);
-    val by = ty + DEF_HEIGHT;
+
+    val lx = (x * DEF_WIDTH) -  {if (!isOdd(y)) halfX else 0};
+    val mx = (lx + halfX)
+    val rx = (lx + DEF_WIDTH)
+    val ty = (y * halfY) - halfY
+    val my = (ty + halfY)
+    val by = (ty + DEF_HEIGHT)
+
+
     Rect(leftTop = pt(lx, my), rightTop = pt(mx, ty), rightBottom = pt(rx, my), leftBottom = pt(mx, by));
   }
 
@@ -159,14 +166,19 @@ object MapManager {
     glColor3f(1.0f, 1.0f, 0.0f);
     drawRect(getMapRect(flatX, flatY));
     glColor3f(1f,1f,1f);
-    drawRect(getTileRect(selectedX, selectedY))
-
-
-
+    val tileRect = getTileRect(selectedX, selectedY);
+    drawRect(tileRect);
 
     glEnd();
     glFlush();
     glEnable(GL_TEXTURE_2D)
+
+  //  FontManager.drawText(tileRect.leftTop.getX, tileRect.leftBottom.getY+30,tileRect.toString, "redfont");
+
+
+
+
+
   }
 
   lazy val mapa: Array[Array[Int]] = {
