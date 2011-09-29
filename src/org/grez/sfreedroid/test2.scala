@@ -16,14 +16,54 @@ import input.Mouse
 import opengl.{GL14, Display, GL11, DisplayMode}
 import GL11._
 import java.nio.IntBuffer
-import textures.Texture
 import utils.NumberUtils
 
+object tangTest {
+  import MapDefaults._
+
+  val X_to_Y_triCoords: List[Int] = {
+    /* ok, Lets assume following: ABC - our triangle
+    A is point in right angle (0,0) ;B - x-axis point (wdt,0); C is y-axis point (0,heg)
+    Now we need to find out all y coordinates that correspond to each x coordinate (that lie on hypotenuse)
+    AC/AB = tang<B;
+    Y/AX = tang<B;
+    Y = AX*tang<B;
+     */
+    val tang: Float = HALF_DEF_HEIGHT.toFloat / HALF_DEF_WIDTH.toFloat;
+    println("tang ="+ tang);
+    (for(x <- HALF_DEF_WIDTH to (0,-1) ) yield (x*tang).round).toList
+    //list is reversed, because our coordinate system differs a little.
+  }
+
+}
+
 object test2   {
+  case class TriangHelper(xt: Int, yt: Int, cxOffset: Int, cyOffset: Int);
+
+  def transformCoords(x: Int, y: Int): TriangHelper = {
+     import MapDefaults._
+
+      val xt = if (x >HALF_DEF_WIDTH) (DEF_WIDTH -  x,1) else (x,0);
+      val yt = if (y > HALF_DEF_HEIGHT)(DEF_HEIGHT -y,1) else (y,-1);
+      //center romb is 0,1 // up left 0,0// up rigth 1,0// bottom left 0,2// bottom rigth 1,2
+
+      TriangHelper(xt._1,yt._1,xt._2,yt._2);
+    }
+
+  def findOutLocalSelected(th: TriangHelper):(Int,Int) ={
+    import tangTest._
+
+    def inTriangle(x:Int, y:Int):Boolean = X_to_Y_triCoords(x) >= y
+
+//    val th = transformCoords(localX,localY);
+    if (inTriangle(th.xt, th.yt)) (th.cxOffset,th.cyOffset) else (0,0);
+  }
 
   def main(args: Array[String]) {
     import MapDefaults._
     import NumberUtils.isOdd
+
+    println (tangTest.X_to_Y_triCoords);
 
     Display.setTitle("SFreeDroid")
 		Display.setFullscreen(false)
@@ -88,8 +128,12 @@ object test2   {
       val localMX = mx % DEF_WIDTH;
       val localMY = my % DEF_HEIGHT;
 
-      val selectedX = flatCordMapX;
-      val selectedY = flatCordMapY*2+1;
+      val transformed = transformCoords(localMX,localMY)
+
+      val selected = findOutLocalSelected(transformed);
+
+      val selectedX = flatCordMapX+ selected._1;
+      val selectedY = (flatCordMapY*2) +selected._2+1;
 
       if (Mouse.isButtonDown(0)){
 
@@ -101,8 +145,6 @@ object test2   {
 //      glMatrixMode(GL_MODELVIEW)
       glLoadIdentity();
       glColor4f(0.1f,0.0f,0.3f,1.0f)
-
-
 
 
 
@@ -125,12 +167,15 @@ object test2   {
 
       }
       printb = false;
-      MapManager.drawGrid(flatCordMapX,flatCordMapY,flatCordMapX,flatCordMapY);
-      FontManager.drawText(800,30,"mouseX="+mx, "ArialGold");
+      MapManager.drawGrid(selectedX,selectedY,flatCordMapX,flatCordMapY);
+      FontManager.drawText(800,30,"mouseX="+mx, "ArialGold".capitalize);
       FontManager.drawText(800,60,"mouseY="+my, "ArialGold");
       FontManager.drawText(800,90,"local: ["+localMX+","+localMY+"]", "ArialGold");
       FontManager.drawText(800,120,"flat: ["+flatCordMapX+","+flatCordMapY+"]", "ArialGold");
       FontManager.drawText(800,150,"selected: ["+selectedX+","+selectedY+"]", "ArialGold");
+      FontManager.drawText(700,170,"localSector: ["+transformed.xt+","+transformed.yt+","+transformed.cxOffset+","
+        +transformed.cyOffset+","+tangTest.X_to_Y_triCoords(transformed.xt)+ "]", "redfont");
+      FontManager.drawText(700,190,"transformed: ["+selected._1+","+selected._2+ "]", "redfont");
 
       //glColor4f(0.1f,1.0f,1.0f,1.0f)
 

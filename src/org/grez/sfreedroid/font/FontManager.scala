@@ -79,7 +79,7 @@ private[font] object defaultFontConfig {
 
     val gtfFC = (fn: String)=> new FontConfig(fn,mappingFromImg(getImg(fn),str));
 
-      fontFiles.map((f:String)=>(rd(f),gtfFC(f))).toMap;
+     fontFiles.map((f:String)=>(rd(f),gtfFC(f))).toMap;
   }
 }
 

@@ -22,6 +22,10 @@ object MapDefaults {
   val NUM_OF_IDS = 40;
   val DEF_WIDTH = 134;
   val DEF_HEIGHT = 66;
+
+  val HALF_DEF_WIDTH =  DEF_WIDTH / 2;
+  val HALF_DEF_HEIGHT =  DEF_HEIGHT / 2;
+
 }
 
 case class MapTile (name: String, tx: Texture,  offsetX: Int = 0, offsetY: Int = 0  ){
@@ -94,15 +98,13 @@ object MapManager {
   def getTileRect(x: Int, y: Int): Rect = {
     import NumberUtils.isOdd;
     val pt = (zx: Int, zy: Int) => new Point(zx, zy);
-    val halfX = DEF_WIDTH /2;
-    val halfY = DEF_HEIGHT /2
 
 
-    val lx = (x * DEF_WIDTH) -  {if (!isOdd(y)) halfX else 0};
-    val mx = (lx + halfX)
+    val lx = (x * DEF_WIDTH) -  {if (!isOdd(y)) HALF_DEF_WIDTH else 0};
+    val mx = (lx + HALF_DEF_WIDTH)
     val rx = (lx + DEF_WIDTH)
-    val ty = (y * halfY) - halfY
-    val my = (ty + halfY)
+    val ty = (y * HALF_DEF_HEIGHT) - HALF_DEF_HEIGHT
+    val my = (ty + HALF_DEF_HEIGHT)
     val by = (ty + DEF_HEIGHT)
 
 
@@ -145,20 +147,18 @@ object MapManager {
 
     glColor3f(0.0f, 0.0f, 0.0f);
 
-    val yHlf = DEF_HEIGHT /2;
-    val xHlf = DEF_WIDTH /2;
     val outScreenX = SIZE_X*DEF_WIDTH;
 
     for (i <- 0 to SIZE_X + 10) {
-      val curY =  (i * DEF_HEIGHT + yHlf) ;
-      val curX = (outScreenX)- ( i * DEF_WIDTH + xHlf);
+      val curY =  (i * DEF_HEIGHT + HALF_DEF_HEIGHT) ;
+      val curX = (outScreenX)- ( i * DEF_WIDTH + HALF_DEF_WIDTH);
       glVertex2i(curX, 0);
       glVertex2i(outScreenX, curY);
     }
 
     for (j <- 0 to SIZE_Y) {
-      val curY = j * DEF_HEIGHT + yHlf ;
-      val curX = j * DEF_WIDTH + xHlf;
+      val curY = j * DEF_HEIGHT + HALF_DEF_HEIGHT ;
+      val curX = j * DEF_WIDTH + HALF_DEF_WIDTH;
       glVertex2i(0, curY);
       glVertex2i(curX, 0);
     }
@@ -174,10 +174,6 @@ object MapManager {
     glEnable(GL_TEXTURE_2D)
 
   //  FontManager.drawText(tileRect.leftTop.getX, tileRect.leftBottom.getY+30,tileRect.toString, "redfont");
-
-
-
-
 
   }
 
