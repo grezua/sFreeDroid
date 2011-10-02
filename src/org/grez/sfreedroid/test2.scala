@@ -16,7 +16,7 @@ import input.Mouse
 import opengl.{GL14, Display, GL11, DisplayMode}
 import GL11._
 import java.nio.IntBuffer
-import utils.NumberUtils
+import utils.{FPSMeter, NumberUtils}
 
 object tangTest {
   import MapDefaults._
@@ -80,7 +80,7 @@ object test2   {
 	  glEnable(GL_ALPHA_TEST);
 	  glAlphaFunc(GL_GREATER, 0.4999f);
 //	  glDisable(GL_BLEND);
-//	  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	 // glBlendFunc(GL_ONE, GL_ZERO);
 	  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 //    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
@@ -98,7 +98,7 @@ object test2   {
     glGenTextures(textureIDBuffer);
 
     //val allTestTex: List[Texture] = (for (i <-0 to MapManager.allTestData.size -1) yield new Texture(MapManager.allTestData(i), textureIDBuffer.get(i))).toList;
-
+    val fps: FPSMeter = new FPSMeter();
     var finished = false;
 
 //    imgLoader.allTestData.foreach( (d: ImgData) => println("w:  "+ d.w + "; h: "+ d.h + " ; offsetX:"+d.offsetX+"; offsetY: "+d.offsetY));
@@ -168,6 +168,7 @@ object test2   {
       }
       printb = false;
       MapManager.drawGrid(selectedX,selectedY,flatCordMapX,flatCordMapY);
+      fps.drawHistogram(20,50);
       FontManager.drawText(800,30,"mouseX="+mx, "ArialGold".capitalize);
       FontManager.drawText(800,60,"mouseY="+my, "ArialGold");
       FontManager.drawText(800,90,"local: ["+localMX+","+localMY+"]", "ArialGold");
@@ -176,7 +177,9 @@ object test2   {
       FontManager.drawText(700,170,"localSector: ["+transformed.xt+","+transformed.yt+","+transformed.cxOffset+","
         +transformed.cyOffset+","+tangTest.X_to_Y_triCoords(transformed.xt)+ "]", "redfont");
       FontManager.drawText(700,190,"transformed: ["+selected._1+","+selected._2+ "]", "redfont");
+      FontManager.drawText(800,220,fps.fps+ " fps", "ArialGold");
 
+      fps.endDraw();
       //glColor4f(0.1f,1.0f,1.0f,1.0f)
 
 
