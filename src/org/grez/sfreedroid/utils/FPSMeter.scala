@@ -2,6 +2,7 @@ package org.grez.sfreedroid.utils
 
 import org.lwjgl.opengl.GL11._
 import java.util.Random
+import collection.mutable.Queue
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,15 +13,16 @@ import java.util.Random
  */
 
 class FPSMeter()  {
-  private val MAX_HIST_SIZE = 150;
+  private val MAX_HIST_SIZE = 65;
   private val MAX_HEG = 100;
   private val SECOND = 1000L;
 
-  val histData: Array[Int] = new Array[Int](MAX_HIST_SIZE);
-  val r: Random = new Random();
+  val histData: Queue[Int] = new Queue[Int]();
+//  var currentPos = 0;
+/*  val r: Random = new Random();
   for (i <- 0 until  MAX_HIST_SIZE) {
     histData(i) = r.nextInt(MAX_HEG);
-  }
+  }*/
 
   var fps = 0;
 
@@ -39,6 +41,9 @@ class FPSMeter()  {
     drown+=1 ;
       if (System.currentTimeMillis() > time+SECOND ){
         fps = drown;
+        histData.enqueue(fps);
+        //currentPos = if (currentPos < MAX_HIST_SIZE - 1) currentPos + 1 else 0;
+        if (histData.size > MAX_HIST_SIZE) histData.dequeue();
         drown = 0;
         time = System.currentTimeMillis();
       }
@@ -61,10 +66,12 @@ class FPSMeter()  {
 
    glColor4f(1f,1f,0f,0.9f);
    glBegin(GL_LINES)
-    for (i <- 0 until  MAX_HIST_SIZE) {
+    var i =3;
+    for (j <- histData) {
      //histData(i) = r.nextInt(MAX_HEG);
-      glVertex2i(drawX+2+i,drawY+MAX_HEG+1);
-      glVertex2i(drawX+2+i,drawY+MAX_HEG+1-histData(i))
+      glVertex2i(drawX+i,drawY+MAX_HEG+1);
+      glVertex2i(drawX+i,drawY+MAX_HEG+1-j)
+      i += 1;
     }
 
     glEnd();

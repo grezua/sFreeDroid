@@ -17,6 +17,7 @@ import opengl.{GL14, Display, GL11, DisplayMode}
 import GL11._
 import java.nio.IntBuffer
 import utils.{FPSMeter, NumberUtils}
+import scala.util.Random
 
 object tangTest {
   import MapDefaults._
@@ -117,7 +118,8 @@ object test2   {
     }
 
     while (!finished){
-      Display.update()
+      Display.sync(60+Random.nextInt(40));
+      Display.update();
       Mouse.poll();
       val my = 767-Mouse.getY;
       val mx = Mouse.getX;
