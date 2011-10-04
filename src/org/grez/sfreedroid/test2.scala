@@ -9,7 +9,7 @@ package org.grez.sfreedroid
  */
 
 
-import console.Console
+import console.{DefaultConsole, Console}
 import font.FontManager
 import org.lwjgl._
 import input.Keyboard._
@@ -32,7 +32,7 @@ object tangTest {
     Y = AX*tang<B;
      */
     val tang: Float = HALF_DEF_HEIGHT.toFloat / HALF_DEF_WIDTH.toFloat;
-    println("tang ="+ tang);
+    DefaultConsole.log("tang ="+ tang);
     (for(x <- HALF_DEF_WIDTH to (0,-1) ) yield (x*tang).round).toList
     //list is reversed, because our coordinate system differs a little.
   }
@@ -64,8 +64,9 @@ object test2   {
   def main(args: Array[String]) {
     import MapDefaults._
     import NumberUtils.isOdd
+    val console = DefaultConsole;
 
-    println (tangTest.X_to_Y_triCoords);
+    console.log (tangTest.X_to_Y_triCoords);
 
     Display.setTitle("SFreeDroid")
 		Display.setFullscreen(false)
@@ -78,7 +79,7 @@ object test2   {
     Keyboard.enableRepeatEvents(false);
 
     val isvsize = glGetInteger(GL_MAX_TEXTURE_SIZE);
-    println (isvsize);
+    console.log (isvsize);
 
     glEnable(GL_TEXTURE_2D)
     glDisable(GL_DEPTH_TEST)
@@ -111,7 +112,7 @@ object test2   {
 
 
     var printb = true;
-    val console: Console = new Console(200,1000);
+
 
     def draw(x: Float,y: Float,id: Int) {
       val mt = MapManager.allTestData(id);
@@ -133,7 +134,7 @@ object test2   {
       //  println(Keyboard.getEventCharacter.toString +" "+ Keyboard.getEventKeyState);
         if (Keyboard.getEventCharacter == '~' && Keyboard.getEventKeyState) {
           //println("showing "+console.showing);
-          console.showing = !console.showing;
+          DefaultConsole.showing = !DefaultConsole.showing;
           Keyboard.enableRepeatEvents(console.showing);
       }
         if (console.showing && Keyboard.getEventKeyState){

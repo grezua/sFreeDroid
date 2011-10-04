@@ -1,5 +1,6 @@
 package org.grez.sfreedroid
 
+import console.DefaultConsole
 import font.FontManager
 import io.Source
 import org.lwjgl.util.Point
@@ -29,7 +30,7 @@ object MapDefaults {
 }
 
 case class MapTile (name: String, tx: Texture,  offsetX: Int = 0, offsetY: Int = 0  ){
-  println(name + "{ w:"+tx.widt+"; h:"+tx.heg+"; ox:"+offsetX+"; oy:"+offsetY+"}");
+  DefaultConsole.log(name + "{ w:"+tx.widt+"; h:"+tx.heg+"; ox:"+offsetX+"; oy:"+offsetY+"}");
 }
 
 object MapManager {
