@@ -68,7 +68,7 @@ private[font] object defaultFontConfig {
   import fontLoadUtil._
 
 
-  private val str = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+  val str = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
   private val fontFiles =  FileUtils.getPngFileList("./graphics/font/");
 
   lazy val defaultMapping = defaultFontMapping();
@@ -86,6 +86,10 @@ private[font] object defaultFontConfig {
 object FontManager {
 
   private lazy val allFonts: Map[String,FontConfig] = defaultFontConfig.defaultMapping;
+
+  def printableChar(c: Char, fontName: String): Boolean = {
+    defaultFontConfig.str.contains(c);
+  }
 
   def drawText(x: Int, y: Int, str: String, fontName: String) {
 

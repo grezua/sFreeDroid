@@ -9,10 +9,11 @@ package org.grez.sfreedroid
  */
 
 
+import console.Console
 import font.FontManager
 import org.lwjgl._
 import input.Keyboard._
-import input.Mouse
+import input.{Keyboard, Mouse}
 import opengl.{GL14, Display, GL11, DisplayMode}
 import GL11._
 import java.nio.IntBuffer
@@ -70,7 +71,11 @@ object test2   {
 		Display.setFullscreen(false)
 		Display.setVSyncEnabled(false)
 		Display.setDisplayMode(new DisplayMode(1024,768))
-		Display.create()
+		Display.create();
+
+    Mouse.create();
+    Keyboard.create();
+    Keyboard.enableRepeatEvents(false);
 
     val isvsize = glGetInteger(GL_MAX_TEXTURE_SIZE);
     println (isvsize);
@@ -106,6 +111,7 @@ object test2   {
 
 
     var printb = true;
+    val console: Console = new Console(200,1000);
 
     def draw(x: Float,y: Float,id: Int) {
       val mt = MapManager.allTestData(id);
@@ -117,10 +123,24 @@ object test2   {
       if (MapManager.mapa(x)(y) >= NUM_OF_IDS) MapManager.mapa(x)(y) = 0 else MapManager.mapa(x)(y) +=1;
     }
 
+
     while (!finished){
-      Display.sync(60+Random.nextInt(40));
+      Display.sync(60);
       Display.update();
       Mouse.poll();
+      Keyboard.poll();
+      while (Keyboard.next()) {
+      //  println(Keyboard.getEventCharacter.toString +" "+ Keyboard.getEventKeyState);
+        if (Keyboard.getEventCharacter == '~' && Keyboard.getEventKeyState) {
+          //println("showing "+console.showing);
+          console.showing = !console.showing;
+          Keyboard.enableRepeatEvents(console.showing);
+      }
+        if (console.showing && Keyboard.getEventKeyState){
+          console.addCh(Keyboard.getEventKey, Keyboard.getEventCharacter);
+        }
+      }
+
       val my = 767-Mouse.getY;
       val mx = Mouse.getX;
 
@@ -170,7 +190,7 @@ object test2   {
       }
       printb = false;
       MapManager.drawGrid(selectedX,selectedY,flatCordMapX,flatCordMapY);
-      fps.drawHistogram(20,50);
+      //fps.drawHistogram(20,50);
       FontManager.drawText(800,30,"mouseX="+mx, "ArialGold".capitalize);
       FontManager.drawText(800,60,"mouseY="+my, "ArialGold");
       FontManager.drawText(800,90,"local: ["+localMX+","+localMY+"]", "ArialGold");
@@ -180,7 +200,9 @@ object test2   {
         +transformed.cyOffset+","+tangTest.X_to_Y_triCoords(transformed.xt)+ "]", "redfont");
       FontManager.drawText(700,190,"transformed: ["+selected._1+","+selected._2+ "]", "redfont");
       FontManager.drawText(800,220,fps.fps+ " fps", "ArialGold");
-
+      if (console.showing){
+         console.draw();
+        }
       fps.endDraw();
       //glColor4f(0.1f,1.0f,1.0f,1.0f)
 
