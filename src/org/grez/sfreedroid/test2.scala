@@ -10,6 +10,7 @@ package org.grez.sfreedroid
 
 
 import console.{DefaultConsole, Console}
+import debug.GlobalDebugState
 import font.FontManager
 import org.lwjgl._
 import input.Keyboard._
@@ -190,7 +191,10 @@ object test2   {
 
       }
       printb = false;
-      MapManager.drawGrid(selectedX,selectedY,flatCordMapX,flatCordMapY);
+
+      if (GlobalDebugState.DrawGridFlag){
+         MapManager.drawGrid(selectedX,selectedY,flatCordMapX,flatCordMapY);
+      }
       //fps.drawHistogram(20,50);
       FontManager.drawText(800,30,"mouseX="+mx, "ArialGold".capitalize);
       FontManager.drawText(800,60,"mouseY="+my, "ArialGold");

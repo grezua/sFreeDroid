@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL11._
 import org.grez.sfreedroid.font.FontManager
 import org.lwjgl.input.Keyboard
 import collection.immutable.Queue
+import org.grez.sfreedroid.debug.GlobalDebugState
 
 /**
  * Created by IntelliJ IDEA.
@@ -70,6 +71,24 @@ class Console(val height:Int, val histSize:Int)  {
      FontManager.drawText(2,height-FONT_HEG,cmd+'_', "redfont" );
   }
 
+  def execute(cmd: String) {
+    cmd.trim().toLowerCase match {
+      case "ddd" => {
+        log("AN DDD CMD! ^_*")
+      }
+      case "enable grid" => {
+       GlobalDebugState.DrawGridFlag = true;
+      }
+      case "disable grid"=> {
+       GlobalDebugState.DrawGridFlag = false;
+      }
+      case _ => {
+        log("UNCNOWN CMD");
+      }
+    }
+  }
+
+
   def addCh(key: Int, c: Char) {
     import org.lwjgl.input.Keyboard._
 
@@ -87,6 +106,7 @@ class Console(val height:Int, val histSize:Int)  {
       }
       case KEY_RETURN => {
         log(cmd);
+        execute(cmd);
         ""
       };
       case _ => c match {
