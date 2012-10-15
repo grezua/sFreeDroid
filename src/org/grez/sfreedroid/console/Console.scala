@@ -23,7 +23,7 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
   var cmd: String = "";
   var historyText: Queue[String] = Queue("");
   var histPosition = 0;
-  var historyCmdT: Queue[String] = Queue(""); //todo: add read from file, or something ^_^!
+  var historyCmdT: Vector[String] = Vector(""); //todo: add read from file, or something ^_^!
   var histCmdPos = 0;
 
   private def histUp(){
@@ -124,14 +124,21 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
      }
   }
 
+  def putCMdToHistory(line: String) {
+    historyCmdT = line +: historyCmdT;
+          if (historyCmdT.size > histSize) historyCmdT = historyCmdT.take(histSize);
+    histCmdPos = -1;
+  }
+
   def searchCmd(s: String): Option[ConsoleCmd] = {
     regCmds.find(cmd => s.startsWith(cmd.cmd));
   }
 
   def execute(cmd: String) {
+    putCMdToHistory(cmd); //history all entered!
     val searchS = searchCmd(cmd);
     if (searchS.isEmpty) {
-      log("UNCNOWN CMD");
+      log("UNKNOWN CMD");
     } else {
       executeCMD(searchS.get, cmd);
     }
@@ -275,6 +282,15 @@ object FewParamsTestCMD extends ConsoleCmd ("test", Option(List(CmdParam("value"
   }
 }
 
+object PrintCMDHistoryCMD extends ConsoleCmd ("printhistory", None){
+  def getHelp = "prints all history commands"
+
+  def execute(params: Option[List[Any]], console: Console) {
+    val histLine =  console.historyCmdT.foldLeft("History of entered CMDS: \n")((s,cmd) => s+ "\t"+cmd+"\n" )+ "--END OF HIST--"
+    console.log(histLine);
+  }
+}
+
 
 /*Default console impl*/
-object DefaultConsole extends Console(200,1000, List(GreetCMD,GridSwitchCMD,FewParamsTestCMD));
+object DefaultConsole extends Console(200,1000, List(GreetCMD,GridSwitchCMD,FewParamsTestCMD,PrintCMDHistoryCMD));
