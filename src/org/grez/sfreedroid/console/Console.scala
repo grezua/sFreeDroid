@@ -4,7 +4,6 @@ import org.lwjgl.opengl.GL11._
 import org.grez.sfreedroid.font.FontManager
 import org.lwjgl.input.Keyboard
 import collection.immutable.Queue
-import org.grez.sfreedroid.debug.GlobalDebugState
 
 /**
  * Created by IntelliJ IDEA.
@@ -73,23 +72,6 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
     histPosition -= 1;
   }
 
-
-  private def drawRectangle(){
-    glShadeModel(GL_FLAT);
-    glDisable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glColor4f(0.3f, 0f, 0.8f,0.8f);
-    glBegin(GL_QUADS);
-    glVertex2i(0,0);
-    glVertex2i(1024,0);
-    glVertex2i(1024,height);
-    glVertex2i(0,height);
-    glEnd();
-    glEnable(GL_TEXTURE_2D);
-    glDisable(GL_BLEND);
-  }
-
   def log (value : Any){
     println(value);
 
@@ -114,9 +96,7 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
       }
   }
 
-  private def drawCmd() {
-     FontManager.drawText(2,height-FONT_HEG,cmd+'_', "redfont" );
-  }
+
 
 
   def executeCMD(cmd: ConsoleCmd, line: String) {
@@ -179,7 +159,6 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
   }
 
 
-
   def addCh(key: Int, c: Char) {
     import org.lwjgl.input.Keyboard._
     cmd = key match {
@@ -221,6 +200,27 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
     }
   }
 
+  def draw(){
+      drawRectangle();
+      drawHistText();
+      drawCmd();
+  }
+
+  private def drawRectangle(){
+    glShadeModel(GL_FLAT);
+    glDisable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.3f, 0f, 0.8f,0.8f);
+    glBegin(GL_QUADS);
+    glVertex2i(0,0);
+    glVertex2i(1024,0);
+    glVertex2i(1024,height);
+    glVertex2i(0,height);
+    glEnd();
+    glEnable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
+  }
 
   def drawHistText(){
 
@@ -236,10 +236,8 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
 
   }
 
-  def draw(){
-      drawRectangle();
-      drawHistText();
-      drawCmd();
+  private def drawCmd() {
+     FontManager.drawText(2,height-FONT_HEG,cmd+'_', "redfont" );
   }
 }
 
@@ -277,66 +275,3 @@ abstract class ConsoleCmd (val cmd: String, val params: Option[List[CmdParam]]) 
 }
 
 
-/* Console command Implementations!  */
-
-object GreetCMD extends ConsoleCmd("greet", None){
-  def getHelp = "Test greet command ^_^!"
-
-  def execute(params: Option[List[Any]], console: Console) {
-    console.log("Greetings from The Console greet commandos!");
-  }
-}
-
-object GridSwitchCMD extends ConsoleCmd ("grid", Option(List(CmdParam("value",CPTBoolean,"true or false"))) ){
-  def getHelp = "enable or disable draving of grid";
-
-  def execute(params: Option[List[Any]], console: Console) {
-    if (params.isEmpty) {
-      console.log("grid: unknown parameter");
-      return;
-    }
-    val flag: Boolean = params.get(0) match {
-      case g: Boolean => g;
-      case _ => {
-        console.log("grid: unknown parameter");
-        return; //execute probably
-      };
-    }
-    console.log("Setting grid to " + flag);
-    GlobalDebugState.DrawGridFlag = flag;
-  }
-}
-
-object FewParamsTestCMD extends ConsoleCmd ("test", Option(List(CmdParam("value", CPTBoolean, "value bool param! ^_^!"),
-  CmdParam("a2", CPTString, "some String Param!"), CmdParam("a3",CPTInt, "Some another Int Param")))){
-
-  def getHelp = "awesome help hee and ther \n no text attached!"
-
-  def execute(params: Option[List[Any]], console: Console) {
-    console.log("alot of text is going here \t \n fld;askf';lkasd'f;ldsafk';sdlafk'lfhgiery0q9t8reytgreoqh\n \n skafhkldahflkdhflk\nsdjjhfkjsdahfj\t\nklddjf;sajf")
-  }
-}
-
-object PrintCMDHistoryCMD extends ConsoleCmd ("printhistory", None){
-  def getHelp = "prints all history commands"
-
-  def execute(params: Option[List[Any]], console: Console) {
-    val histLine =  console.cmdHistory.getHistoryCmd.foldLeft("History of entered CMDS: \n")((s,cmd) => s+ "\t"+cmd+"\n" )+ "--END OF HIST--"
-    console.log(histLine);
-  }
-}
-
-object QuitCMD extends ConsoleCmd ("quit", None){
-  def getHelp = "good bye!"
-
-  def execute(params: Option[List[Any]], console: Console) {
-    //val histLine =  console.historyCmdT.foldLeft("History of entered CMDS: \n")((s,cmd) => s+ "\t"+cmd+"\n" )+ "--END OF HIST--"
-    console.log("biye biye!");
-    System.exit(-1); //todo: polite shotdown routine in the future!
-  }
-}
-
-
-/*Default console impl*/
-object DefaultConsole extends Console(200,1000, List(GreetCMD,GridSwitchCMD,FewParamsTestCMD,PrintCMDHistoryCMD,
-QuitCMD));

@@ -9,7 +9,7 @@ package org.grez.sfreedroid
  */
 
 
-import console.{DefaultConsole, Console}
+import console.DefaultConsole
 import debug.GlobalDebugState
 import font.FontManager
 import org.lwjgl._
