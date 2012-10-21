@@ -153,9 +153,29 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
      }
   }
 
-
   def searchCmd(s: String): Option[ConsoleCmd] = {
     regCmds.find(cmd => s.startsWith(cmd.cmd));
+  }
+
+  def searchStrCMD(s:String): List[ConsoleCmd] = {
+    regCmds.filter(cmd => cmd.cmd.startsWith(s));
+  }
+
+  def autoAppendToCommon(l: List[ConsoleCmd]): String = {
+    def fidex (i: Int): Boolean = {
+      val letter = l(0).cmd.charAt(i);
+      for {j <- 1 until l.size } {
+        if (i >= l(j).cmd.size  || letter != l(j).cmd.charAt(i)) return false;
+      }
+      true;
+    }
+
+    var i = 0;
+    while (fidex(i)){
+      i += 1;
+    }
+
+    l(0).cmd.take(i);
   }
 
   def execute(cmd: String) {
@@ -198,6 +218,17 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
       };
       case KEY_UP => {
         cmdHistory.historyPosUp(cmd);
+      };
+      case KEY_TAB => {
+        val foundCmds = searchStrCMD(cmd);
+        foundCmds match {
+          case l if l.isEmpty => cmd;
+          case l if l.size == 1 => l(0).cmd;
+          case l => {
+            log(l.foldLeft("possible cmds:\n")((st, curr) => st+ "\t" + curr.cmd + "\n"))
+            autoAppendToCommon(l);
+          }
+        }
       };
       case _ => c match {
         case '?' => {
