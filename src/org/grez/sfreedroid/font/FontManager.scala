@@ -20,11 +20,11 @@ case class CharConfig(ch: Char, tx: Texture);
 class FontConfig(val fn: String, val map: Option[Map[Char, CharConfig]]);
 
 private[font] object fontLoadUtil {
-  private val MARK_CONST = -16711681;
+  /*private val MARK_CONST = -16711681;
 
   private def isMark(v: Int) = {
     v == MARK_CONST;
-  }
+  }*/
 
   def mappingFromImg(imgData: ImgData, str: String): Option[Map[Char, CharConfig]] = {
     val result = scala.collection.mutable.Map[Char, CharConfig]();
@@ -92,7 +92,7 @@ object FontManager {
 
   private lazy val allFonts: Map[String,FontConfig] = defaultFontConfig.defaultMapping;
 
-  def printableChar(c: Char, fontName: String): Boolean = {
+  def printableChar(c: Char): Boolean = {
     defaultFontConfig.str.contains(c);
   }
 

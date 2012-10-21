@@ -68,12 +68,12 @@ class ConsoleLogHistory(val histSize: Int, var textLinesCount: Int){
     histPosition -= 1;
   }
 
-  def putHistory(line: String) {
+  def putHistory(line: String,  additor: String = "") {
 
     def putTx(txt: String){
-      historyText += txt;
+      historyText += additor+txt;
       if (historyText.size > histSize) historyText = historyText.dequeue._2;
-      }
+    }
 
     var txt = line.replace("\t","    ");
 
@@ -89,9 +89,8 @@ class ConsoleLogHistory(val histSize: Int, var textLinesCount: Int){
           putTx(if (kk._1.length() >79) kk._1+'/' else kk._1 );
         }
       }
-  }
+   }
 }
-
 
 
 class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  {
@@ -100,7 +99,7 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
   val LINE_H = (FONT_HEG+4);
   val textLinesCount: Int = (height / LINE_H)-1;
 
-  var consoleHistFontName = "font05" ;
+  //var defaultConsoleFont = "font05" ;
 
   var showing = false
   var cmd: String = "";
@@ -108,10 +107,24 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
   val logHistory = new ConsoleLogHistory(histSize, textLinesCount);
   val cmdHistory = new ConsoleCMDHistory(histSize);
 
+  val logFontIndex = scala.collection.mutable.Map ((0,"font05"),(1,"font05_red"),(2,"font05_yellow")); //todo redo this font config thing!
+
 
   def log (value : Any){
     println(value);
     logHistory.putHistory(value.toString);
+  }
+
+  def logFromCommand (value : Any){
+    log(value,1);
+  }
+
+  def log (value : Any, cidx: Int){
+    println(value);
+    if (value.toString().startsWith("%")){
+      logHistory.putHistory(value.toString);
+    } else
+    logHistory.putHistory(value.toString, "%"+cidx);
   }
 
   def executeCMD(cmd: ConsoleCmd, line: String) {
@@ -209,7 +222,7 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
         cmd;
       };
       case KEY_RETURN => {
-        log(cmd);
+        log(cmd,2);
         execute(cmd.trim);
         ""
       };
@@ -240,7 +253,7 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
           }
           cmd;
         };
-        case pc if FontManager.printableChar(pc,"redfont") => cmd+c;
+        case pc if FontManager.printableChar(pc) => cmd+c;
         case _ => cmd;
       };
     }
@@ -268,6 +281,7 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
     glDisable(GL_BLEND);
   }
 
+
   def drawHistText(){
     val historyText = logHistory.getHistoryText;
 
@@ -275,7 +289,20 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
       if (txt.isEmpty || yidx < -LINE_H) return;
 
       val elem = txt.dequeue;
-      FontManager.drawText(2,yidx,elem._1, consoleHistFontName );
+      val line = elem._1;
+      val defaultFontName = logFontIndex.get(0).get;
+
+       if (!line.isEmpty && line(0) == '%'){
+         val fontIdx = Integer.parseInt(line.substring(1,2)) ;
+         val fontName = logFontIndex.get(fontIdx) match {
+           case s: Some[String] => s.get;
+           case None => defaultFontName;
+         }
+
+         FontManager.drawText(2,yidx,line.drop(2), fontName);
+       } else {
+         FontManager.drawText(2,yidx,line, defaultFontName);
+       }
       recur(elem._2, yidx - FONT_HEG)
     }
 
