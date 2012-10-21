@@ -3,6 +3,7 @@ package org.grez.sfreedroid.font
 import org.lwjgl.opengl.GL11._
 import java.nio.ByteBuffer
 import org.grez.sfreedroid._
+import console.DefaultConsole
 import textures._
 import utils.FileUtils
 
@@ -26,9 +27,10 @@ private[font] object fontLoadUtil {
   }
 
   def mappingFromImg(imgData: ImgData, str: String): Option[Map[Char, CharConfig]] = {
-    var result = scala.collection.mutable.Map[Char, CharConfig]();
+    val result = scala.collection.mutable.Map[Char, CharConfig]();
+    val mark= imgData.buf.getInt(0);
 
-    val sTlist: List[Int] = (for {k <- 0 until imgData.w; if isMark(imgData.buf.getInt)} yield k).toList;
+    val sTlist: List[Int] = (for {k <- 0 until imgData.w; if (mark == imgData.buf.getInt)} yield k).toList;
     imgData.buf.clear();
 
     val zlist: List[(Int, Int)] = (for {k <- 0 until sTlist.size - 1; if (sTlist(k) != sTlist(k + 1) - 1)} yield (sTlist(k) + 1, sTlist(k + 1) - 1)).toList;
@@ -77,7 +79,10 @@ private[font] object defaultFontConfig {
     import FileUtils.{getFileNameWithoutDirAndExt => rd};
     import ImageLoad.{loadImgFile => getImg};
 
-    val gtfFC = (fn: String)=> new FontConfig(fn,mappingFromImg(getImg(fn),str));
+    val gtfFC = (fn: String)=> {
+      DefaultConsole.log("loading font: " +fn);
+      new FontConfig(fn,mappingFromImg(getImg(fn),str));
+    }
 
      fontFiles.map((f:String)=>(rd(f),gtfFC(f))).toMap;
   }
@@ -90,6 +95,10 @@ object FontManager {
   def printableChar(c: Char, fontName: String): Boolean = {
     defaultFontConfig.str.contains(c);
   }
+
+  def getAllFontNames: List[String] = allFonts.keys.toList;
+
+  def isFontExists(fontName: String): Boolean = allFonts.contains(fontName);
 
   def drawText(x: Int, y: Int, str: String, fontName: String) {
 

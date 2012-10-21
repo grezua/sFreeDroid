@@ -51,36 +51,31 @@ class ConsoleCMDHistory(val histSize: Int){
    def getHistoryCmd = historyCmdT;
 }
 
-class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  {
+class ConsoleLogHistory(val histSize: Int, var textLinesCount: Int){
+   private var historyText: Queue[String] = Queue("");
+   private var histPosition = 0;
 
-  val FONT_HEG = 25;
-  val LINE_H = (FONT_HEG+4);
-  val textLinesCount: Int = (height / LINE_H)-1;
-  var showing = false
-  var cmd: String = "";
-  var historyText: Queue[String] = Queue("");
-  var histPosition = 0;
-  val cmdHistory = new ConsoleCMDHistory(histSize);
+  def getHistoryText = historyText;
+  def getHistPosition = histPosition;
 
-  private def histUp(){
+  def histUp(){
     if (histPosition >= historyText.size - textLinesCount) return;
     histPosition += 1;
   }
 
-  private def histDown(){
+  def histDown(){
     if (histPosition <= 0) return;
     histPosition -= 1;
   }
 
-  def log (value : Any){
-    println(value);
+  def putHistory(line: String) {
 
     def putTx(txt: String){
       historyText += txt;
       if (historyText.size > histSize) historyText = historyText.dequeue._2;
       }
 
-    var txt = value.toString.replace("\t","    ");
+    var txt = line.replace("\t","    ");
 
     while (!txt.isEmpty){
         val newLineIndex = txt.indexOf('\n');
@@ -95,9 +90,29 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
         }
       }
   }
+}
 
 
 
+class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  {
+
+  val FONT_HEG = 25;
+  val LINE_H = (FONT_HEG+4);
+  val textLinesCount: Int = (height / LINE_H)-1;
+
+  var consoleHistFontName = "font05" ;
+
+  var showing = false
+  var cmd: String = "";
+
+  val logHistory = new ConsoleLogHistory(histSize, textLinesCount);
+  val cmdHistory = new ConsoleCMDHistory(histSize);
+
+
+  def log (value : Any){
+    println(value);
+    logHistory.putHistory(value.toString);
+  }
 
   def executeCMD(cmd: ConsoleCmd, line: String) {
     val paramsStrings = line.split(" ").toList.filter(_ != "").tail; //first str is cmd itself!
@@ -166,16 +181,16 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
       case KEY_SPACE => cmd + ' ' ;
       case KEY_GRAVE => cmd ;
       case KEY_PRIOR => {
-        histUp();
+        logHistory.histUp();
         cmd;
       };
       case KEY_NEXT => {
-        histDown();
+        logHistory.histDown();
         cmd;
       };
       case KEY_RETURN => {
         log(cmd);
-        execute(cmd.trim.toLowerCase);
+        execute(cmd.trim);
         ""
       };
       case KEY_DOWN => {
@@ -223,16 +238,17 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
   }
 
   def drawHistText(){
+    val historyText = logHistory.getHistoryText;
 
     def recur(txt: Queue[String], yidx: Int){
       if (txt.isEmpty || yidx < -LINE_H) return;
 
       val elem = txt.dequeue;
-      FontManager.drawText(2,yidx,elem._1, "redfont" );
+      FontManager.drawText(2,yidx,elem._1, consoleHistFontName );
       recur(elem._2, yidx - FONT_HEG)
     }
 
-    recur(historyText.reverse.drop(histPosition), textLinesCount * LINE_H);
+    recur(historyText.reverse.drop(logHistory.getHistPosition), textLinesCount * LINE_H);
 
   }
 
@@ -255,7 +271,6 @@ object CmdParamType extends Enumeration("CPTInt", "CPTString", "CPTFloat", "CPTB
     false;
   }
 }
-
 
 import CmdParamType._; //wierd scala enums
 
