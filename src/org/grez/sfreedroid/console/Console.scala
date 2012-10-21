@@ -14,6 +14,44 @@ import org.grez.sfreedroid.debug.GlobalDebugState
  * console
  */
 
+class ConsoleCMDHistory(val histSize: Int){
+    private var historyCmdT: Vector[String] = Vector(); //todo: add read from file, or something ^_^!
+    private var histCmdPos = 0;
+    private var tempCMdForHistory = "";
+
+  def putCMdToHistory(line: String) {
+    historyCmdT = line +: historyCmdT;
+          if (historyCmdT.size > histSize) historyCmdT = historyCmdT.take(histSize);
+    histCmdPos = -1;
+  }
+
+  def historyPosDown(localCmd: String): String = {
+          if (histCmdPos < 0)
+            localCmd;
+          else if (histCmdPos == 0) {
+            histCmdPos -= 1;
+            tempCMdForHistory;
+          }
+          else {
+            histCmdPos -= 1;
+            historyCmdT(histCmdPos);
+          }
+        }
+
+  def historyPosUp(localCmd: String): String = {
+    if (histCmdPos >= historyCmdT.size - 1)
+      localCmd;
+    else {
+      if (histCmdPos == -1) tempCMdForHistory = localCmd;
+
+      histCmdPos += 1;
+      historyCmdT(histCmdPos);
+    }
+  }
+
+   def getHistoryCmd = historyCmdT;
+}
+
 class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  {
 
   val FONT_HEG = 25;
@@ -23,8 +61,7 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
   var cmd: String = "";
   var historyText: Queue[String] = Queue("");
   var histPosition = 0;
-  var historyCmdT: Vector[String] = Vector(""); //todo: add read from file, or something ^_^!
-  var histCmdPos = 0;
+  val cmdHistory = new ConsoleCMDHistory(histSize);
 
   private def histUp(){
     if (histPosition >= historyText.size - textLinesCount) return;
@@ -36,9 +73,6 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
     histPosition -= 1;
   }
 
- /* private def histCmdUp(): Option[String]{     //todo it later
-
-  }*/
 
   private def drawRectangle(){
     glShadeModel(GL_FLAT);
@@ -124,18 +158,14 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
      }
   }
 
-  def putCMdToHistory(line: String) {
-    historyCmdT = line +: historyCmdT;
-          if (historyCmdT.size > histSize) historyCmdT = historyCmdT.take(histSize);
-    histCmdPos = -1;
-  }
 
   def searchCmd(s: String): Option[ConsoleCmd] = {
     regCmds.find(cmd => s.startsWith(cmd.cmd));
   }
 
   def execute(cmd: String) {
-    putCMdToHistory(cmd); //history all entered!
+    cmdHistory.putCMdToHistory(cmd);
+
     val searchS = searchCmd(cmd);
     if (searchS.isEmpty) {
       log("UNKNOWN CMD");
@@ -168,6 +198,12 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  
         log(cmd);
         execute(cmd.trim.toLowerCase);
         ""
+      };
+      case KEY_DOWN => {
+        cmdHistory.historyPosDown(cmd);
+      };
+      case KEY_UP => {
+        cmdHistory.historyPosUp(cmd);
       };
       case _ => c match {
         case '?' => {
@@ -221,7 +257,6 @@ object CmdParamType extends Enumeration("CPTInt", "CPTString", "CPTFloat", "CPTB
     false;
   }
 }
-
 
 
 import CmdParamType._; //wierd scala enums
@@ -286,11 +321,22 @@ object PrintCMDHistoryCMD extends ConsoleCmd ("printhistory", None){
   def getHelp = "prints all history commands"
 
   def execute(params: Option[List[Any]], console: Console) {
-    val histLine =  console.historyCmdT.foldLeft("History of entered CMDS: \n")((s,cmd) => s+ "\t"+cmd+"\n" )+ "--END OF HIST--"
+    val histLine =  console.cmdHistory.getHistoryCmd.foldLeft("History of entered CMDS: \n")((s,cmd) => s+ "\t"+cmd+"\n" )+ "--END OF HIST--"
     console.log(histLine);
+  }
+}
+
+object QuitCMD extends ConsoleCmd ("quit", None){
+  def getHelp = "good bye!"
+
+  def execute(params: Option[List[Any]], console: Console) {
+    //val histLine =  console.historyCmdT.foldLeft("History of entered CMDS: \n")((s,cmd) => s+ "\t"+cmd+"\n" )+ "--END OF HIST--"
+    console.log("biye biye!");
+    System.exit(-1); //todo: polite shotdown routine in the future!
   }
 }
 
 
 /*Default console impl*/
-object DefaultConsole extends Console(200,1000, List(GreetCMD,GridSwitchCMD,FewParamsTestCMD,PrintCMDHistoryCMD));
+object DefaultConsole extends Console(200,1000, List(GreetCMD,GridSwitchCMD,FewParamsTestCMD,PrintCMDHistoryCMD,
+QuitCMD));
