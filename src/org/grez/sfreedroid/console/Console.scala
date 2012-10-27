@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL11._
 import org.grez.sfreedroid.font.FontManager
 import org.lwjgl.input.Keyboard
 import collection.immutable.Queue
+import org.grez.sfreedroid.drawable.Drawable
 
 /**
  * Created by IntelliJ IDEA.
@@ -93,7 +94,7 @@ class ConsoleLogHistory(val histSize: Int, var textLinesCount: Int){
 }
 
 
-class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd])  {
+class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd]) extends Drawable {
 
   val FONT_HEG = 25;
   val LINE_H = (FONT_HEG+4);

@@ -1,5 +1,7 @@
 package org.grez.sfreedroid.debug
 
+import org.grez.sfreedroid.utils.FPSMeter
+
 /**
  * Created by IntelliJ IDEA.
  * User: grez
@@ -11,5 +13,6 @@ package org.grez.sfreedroid.debug
 object GlobalDebugState {
 
   var DrawGridFlag: Boolean = false;
+  lazy val fpsMeter =  new FPSMeter;
 
 }

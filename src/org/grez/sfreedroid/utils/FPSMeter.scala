@@ -3,6 +3,8 @@ package org.grez.sfreedroid.utils
 import org.lwjgl.opengl.GL11._
 import java.util.Random
 import collection.mutable.Queue
+import org.grez.sfreedroid.drawable.Drawable
+import org.grez.sfreedroid.font.FontManager
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,6 +38,22 @@ class FPSMeter()  {
       }
   }
 */
+
+  def getFPSDrawable(x: Int, y: Int): Drawable = {
+    new Drawable {
+      def draw() {
+        FontManager.drawText(x,y,fps+ " fps", "ArialGold");
+      }
+    }
+  }
+
+  def getHistogramDrawable(x: Int, y: Int): Drawable = {
+    new Drawable {
+      def draw() {
+        drawHistogram(x,y);
+      }
+    }
+  }
 
   def endDraw(){
     drown+=1 ;
@@ -78,5 +96,6 @@ class FPSMeter()  {
      glDisable(GL_BLEND);
     glEnable(GL_TEXTURE_2D);
   }
+
 
 }

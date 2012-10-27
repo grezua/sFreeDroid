@@ -65,6 +65,8 @@ object test2   {
   def main(args: Array[String]) {
     import MapDefaults._
     import NumberUtils.isOdd
+    import GlobalDebugState.fpsMeter
+
     val console = DefaultConsole;
 
     console.log (tangTest.X_to_Y_triCoords);
@@ -106,7 +108,9 @@ object test2   {
     glGenTextures(textureIDBuffer);
 
     //val allTestTex: List[Texture] = (for (i <-0 to MapManager.allTestData.size -1) yield new Texture(MapManager.allTestData(i), textureIDBuffer.get(i))).toList;
-    val fps: FPSMeter = new FPSMeter();
+
+    DrawableEntitiesManager.addEntity("fps", fpsMeter.getFPSDrawable(800,220))
+
     var finished = false;
 
 //    imgLoader.allTestData.foreach( (d: ImgData) => println("w:  "+ d.w + "; h: "+ d.h + " ; offsetX:"+d.offsetX+"; offsetY: "+d.offsetY));
@@ -204,11 +208,14 @@ object test2   {
       FontManager.drawText(700,170,"localSector: ["+transformed.xt+","+transformed.yt+","+transformed.cxOffset+","
         +transformed.cyOffset+","+tangTest.X_to_Y_triCoords(transformed.xt)+ "]", "redfont");
       FontManager.drawText(700,190,"transformed: ["+selected._1+","+selected._2+ "]", "redfont");
-      FontManager.drawText(800,220,fps.fps+ " fps", "ArialGold");
+
+
+      DrawableEntitiesManager.drawAll();
+
       if (console.showing){
          console.draw();
         }
-      fps.endDraw();
+      fpsMeter.endDraw();
       //glColor4f(0.1f,1.0f,1.0f,1.0f)
 
 
@@ -216,5 +223,7 @@ object test2   {
 
     Display.destroy();
   }
+
+  //class GridCalc
 
 }
