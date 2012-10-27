@@ -11,26 +11,30 @@ import drawable.{TextDrawable, Drawable}
  * To change this template use File | Settings | File Templates.
  */
 object DrawableEntitiesManager {
-  private var entities: HashMap[String,Drawable] = initializeDefs();
+  private var entities: HashMap[String,(Int,Drawable)] = HashMap();
+  private var sortedList: List[Drawable] = List();
 
-  private def initializeDefs():HashMap[String,Drawable] = {
-    HashMap(("",new TextDrawable("hello",400,300)));
+
+  def updSortedList() {
+    sortedList =  entities.values.toList.sortBy(_._1).unzip._2
   }
 
   def drawAll(){
-    entities.values.foreach(_.draw());
+    sortedList.foreach(_.draw());
   }
 
-  def addEntity(name: String, entity: Drawable){
-    entities += ((name,entity));
+  def addEntity(name: String, entity: Drawable, layer: Int = 0){
+    entities += ((name,(layer,entity)));
+    updSortedList();
   }
 
   def deleteEntry(name: String) {
     entities -= name;
+    updSortedList();
   }
 
   def listAllEntries() = {
-    entities.values.toList;
+    entities.keys.toList;
   }
 
 }

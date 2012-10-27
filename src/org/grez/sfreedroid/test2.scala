@@ -36,10 +36,10 @@ object test2   {
 
     //val allTestTex: List[Texture] = (for (i <-0 to MapManager.allTestData.size -1) yield new Texture(MapManager.allTestData(i), textureIDBuffer.get(i))).toList;
 
-    DrawableEntitiesManager.addEntity("fps", fpsMeter.getFPSDrawable(800,220))
-    DrawableEntitiesManager.addEntity("mousePos", new MouseGridDebugDrawable(mouseHelper))
-    DrawableEntitiesManager.addEntity("map", new MapDrawable());
-    DrawableEntitiesManager.addEntity("mapGrid", new MapGridDrawable(mouseHelper));
+    DrawableEntitiesManager.addEntity("map", new MapDrawable(),0);
+    DrawableEntitiesManager.addEntity("mapGrid", new MapGridDrawable(mouseHelper),1);
+    DrawableEntitiesManager.addEntity("fps", fpsMeter.getFPSDrawable(800,220),2)
+    DrawableEntitiesManager.addEntity("mousePos", new MouseGridDebugDrawable(mouseHelper),2)
 
     var finished = false;
 
