@@ -36,7 +36,7 @@ class MouseGridHelper extends OnMousePosUpdate {
   override def updateMousePos(x: Int, y: Int) {
     super.updateMousePos(x, y);
 
-    my = 767 - mouseY;
+    my = mouseY //767 - mouseY;
     mx = mouseX;
 
     flatCordMapX = mx / DEF_WIDTH;

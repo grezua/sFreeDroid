@@ -1,7 +1,8 @@
 package org.grez.sfreedroid
 
 import collection.immutable.HashMap
-import drawable.{TextDrawable, Drawable}
+import drawable.{OnMousePosUpdate, TextDrawable, Drawable}
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,12 +12,17 @@ import drawable.{TextDrawable, Drawable}
  * To change this template use File | Settings | File Templates.
  */
 object DrawableEntitiesManager {
-  private var entities: HashMap[String,(Int,Drawable)] = HashMap();
+  private var entities: Map[String,(Int,Drawable)] = HashMap();
   private var sortedList: List[Drawable] = List();
+  private var mouseableEntities: Map[String, OnMousePosUpdate] = HashMap();
 
 
-  def updSortedList() {
+  private def updSortedList() {
     sortedList =  entities.values.toList.sortBy(_._1).unzip._2
+  }
+
+  def updMousePos(x: Int, y: Int){
+    mouseableEntities.values.foreach(_.updateMousePos(x,y));
   }
 
   def drawAll(){
@@ -26,9 +32,20 @@ object DrawableEntitiesManager {
   def addEntity(name: String, entity: Drawable, layer: Int = 0){
     entities += ((name,(layer,entity)));
     updSortedList();
+
+    if (entity.isInstanceOf[OnMousePosUpdate]){
+      mouseableEntities += ((name,entity.asInstanceOf[OnMousePosUpdate]));
+    }
   }
 
+/*  def addMouseableEntity(name: String, entity: Drawable with Mouseable, layer: Int = 0){
+
+    entities += ((name,(layer,entity)));
+    updSortedList();
+  }*/
+
   def deleteEntry(name: String) {
+    mouseableEntities -= name;
     entities -= name;
     updSortedList();
   }

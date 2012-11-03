@@ -17,6 +17,6 @@ trait OnMousePosUpdate {
 
    def updateMousePos(x: Int, y: Int) {
      this.mouseX = x;
-     this.mouseY = y;
+     this.mouseY = 767 - y;
    }
 }

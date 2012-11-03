@@ -3,6 +3,7 @@ package org.grez.sfreedroid.console
 import org.grez.sfreedroid.debug.GlobalDebugState
 import CmdParamType._
 import org.grez.sfreedroid.font.FontManager
+import org.grez.sfreedroid.DrawableEntitiesManager
 ;
 
 //wierd scala enums
@@ -103,7 +104,33 @@ object ListAllFontsCMD extends ConsoleCmd("listfonts", None) {
   }
 }
 
+object ListAllDrawables extends  ConsoleCmd("listentities", None){
+  def getHelp = "prints all entities in session"
+
+  def execute(params: Option[List[Any]], console: Console) {
+    console.logFromCommand(DrawableEntitiesManager.listAllEntries().foldLeft("Entities: \n")((l,s)=> l+ " "+ s));
+  }
+}
+
+object DeleteDrawable extends  ConsoleCmd("rementity", Some(List(CmdParam("name", CmdParamType.CPTString, "name of entity to delete")))){
+  def getHelp = "delete entity from session"
+
+  def execute(params: Option[List[Any]], console: Console) {
+     val entName = params.get(0) match {
+          case s: String => s;
+          case _ => {
+            console.logFromCommand("invalid cmd");
+            return;
+          };
+        };
+
+     DrawableEntitiesManager.deleteEntry(entName);
+     console.logFromCommand("-"+entName);
+  }
+
+}
+
 
 /*Default console impl*/
 object DefaultConsole extends Console(200, 1000, List(GreetCMD, GridSwitchCMD, FewParamsTestCMD, PrintCMDHistoryCMD,
-  QuitCMD, SetConsoleLogFontCMD, ListAllFontsCMD));
+  QuitCMD, SetConsoleLogFontCMD, ListAllFontsCMD, ListAllDrawables, DeleteDrawable));

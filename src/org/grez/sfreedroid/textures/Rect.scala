@@ -10,7 +10,27 @@ import org.lwjgl.util.Point
  * To change this template use File | Settings | File Templates.
  */
 
+object Rect {
+  private def P(x:Int, y: Int) = new Point(x,y);
+
+  def apply (ltx: Int, lty: Int, rtx: Int, rty: Int, rbx: Int, rby: Int, lbx: Int, lby: Int) = {
+    new Rect(P(ltx,lty),P(rtx,rty), P(rbx,rby), P(lbx,lby) );
+  }
+
+  def apply(ltp: (Int,Int), rbp: (Int, Int)) = {
+    val (ltx,lty) = ltp;
+    val (rbx,rby) = rbp;
+
+    new Rect(P(ltx,lty),P(rbx,lty),P(rbx,rby),P(ltx,rby));
+  }
+}
+
 case class Rect (leftTop:Point, rightTop:Point, rightBottom:Point, leftBottom:Point){
+
+  def isCordsWithin(x: Int, y: Int): Boolean = {
+    x>leftTop.getX && x<rightBottom.getX && y > leftTop.getY && y < rightBottom.getY
+  }
+
   private def pointToString(p:Point) = "{x="+p.getX+",y="+p.getY+"}"
 
   override def toString = "lt"+pointToString(leftTop)+" rt"+pointToString(rightTop)+"rb"+pointToString(rightBottom)+"lb"+pointToString(leftBottom);

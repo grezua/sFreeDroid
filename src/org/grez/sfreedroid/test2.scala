@@ -19,7 +19,10 @@ import input.{Keyboard, Mouse}
 import opengl.{GL14, Display, GL11, DisplayMode}
 import GL11._
 import java.nio.IntBuffer
+import textures.Rect
+import util.Point
 import utils.MouseGridHelper
+import org.grez.controls.SimpleButton
 
 
 object test2   {
@@ -40,6 +43,7 @@ object test2   {
     DrawableEntitiesManager.addEntity("mapGrid", new MapGridDrawable(mouseHelper),1);
     DrawableEntitiesManager.addEntity("fps", fpsMeter.getFPSDrawable(800,220),2)
     DrawableEntitiesManager.addEntity("mousePos", new MouseGridDebugDrawable(mouseHelper),2)
+    DrawableEntitiesManager.addEntity("b1", new SimpleButton(Rect((300,300),(400,350))))
 
     var finished = false;
 
@@ -55,6 +59,7 @@ object test2   {
       Display.update();
       Mouse.poll();
       Keyboard.poll();
+      DrawableEntitiesManager.updMousePos(Mouse.getX, Mouse.getY);
       mouseHelper.updateMousePos(Mouse.getX, Mouse.getY);
 
       while (Keyboard.next()) {
