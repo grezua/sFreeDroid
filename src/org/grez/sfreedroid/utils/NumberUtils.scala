@@ -10,4 +10,12 @@ package org.grez.sfreedroid.utils
 
 object NumberUtils {
    def isOdd(x:Int) = {(x % 2) == 1}
+
+   def closest2power(s: Int): Int = {
+    var l = 2;
+    while (l < s) {
+      l *= 2;
+    }
+    return l;
+  }
 }

@@ -1,8 +1,6 @@
 package org.grez.sfreedroid.textures
 
 import com.twl.PNGDecoder
-import io.Source
-import java.io.{File, FileInputStream, InputStream}
 import javax.imageio.ImageIO
 import java.nio.{ByteOrder, ByteBuffer}
 import java.awt.color.ColorSpace
@@ -40,6 +38,8 @@ object ImageLoad {
 
 
   def getPixelDataForIMG(f: JFile): ImgData = {
+    import org.grez.sfreedroid.utils.NumberUtils.closest2power;
+
     val bufferedImage = ImageIO.read(f);
     val hw = (closest2power(bufferedImage.getHeight()), closest2power(bufferedImage.getWidth()));
     val imgConvertedParams = convertImgBuf(bufferedImage, hw);
@@ -72,11 +72,5 @@ object ImageLoad {
     (new BufferedImage(glColorModel, raster, false, new Hashtable()), false);
   }
 
-  private def closest2power(s: Int): Int = {
-    var l = 2;
-    while (l < s) {
-      l *= 2;
-    }
-    return l;
-  }
+
 }
