@@ -5,6 +5,7 @@ import org.grez.sfreedroid.{utils, MapManager}
 import utils.MouseGridHelper
 import utils.NumberUtils._
 import org.grez.sfreedroid.MapDefaults._
+import org.grez.sfreedroid.controls.OnMousePosUpdate
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,7 +14,9 @@ import org.grez.sfreedroid.MapDefaults._
  * Time: 11:40 PM
  * To change this template use File | Settings | File Templates.
  */
-class MapDrawable extends Drawable {
+class MapDrawable extends Drawable with OnMousePosUpdate {
+  private val mouseHelper: MouseGridHelper = new MouseGridHelper;
+
   private def draw(x: Float,y: Float,id: Int) {
      val mt = MapManager.allTestData(id);
          mt.tx.draw(x,y);
@@ -37,9 +40,24 @@ class MapDrawable extends Drawable {
 
     }
   }
+
+  override def updateMousePos(x: Int, y: Int) {
+    super.updateMousePos(x, y);
+    mouseHelper.updateMousePos(x,y);
+
+  }
+
+  def mapaClck(){
+    import  mouseHelper.{selectedX => x,selectedY => y};
+
+    if (MapManager.mapa(x)(y) >= NUM_OF_IDS) MapManager.mapa(x)(y) = 0 else MapManager.mapa(x)(y) +=1;
+  }
+
+  def getGridDrawable = new MapGridDrawable(mouseHelper);
+  def getGridDebugDrawable = new MouseGridDebugDrawable(mouseHelper);
 }
 
-class MapGridDrawable(val mouseHelper: MouseGridHelper) extends Drawable {
+private[drawable] class MapGridDrawable(val mouseHelper: MouseGridHelper) extends Drawable {
   def draw() {
     if (GlobalDebugState.DrawGridFlag){
       import mouseHelper._

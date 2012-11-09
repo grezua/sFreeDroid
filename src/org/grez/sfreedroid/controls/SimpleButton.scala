@@ -1,10 +1,12 @@
 package org.grez.controls
 
 import org.grez.sfreedroid.drawable.Drawable
-import org.grez.sfreedroid.textures.Rect
 import org.lwjgl.opengl.GL11._
 import org.grez.sfreedroid.textures.Rect
 import org.grez.sfreedroid.font.FontManager
+import org.grez.sfreedroid.console.DefaultConsole
+import org.grez.sfreedroid.controls.Control
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,7 +16,7 @@ import org.grez.sfreedroid.font.FontManager
  * To change this template use File | Settings | File Templates.
  */
 
-class SimpleButton(val rect: Rect) extends RectMouseable with Drawable {
+class SimpleButton(val rect: Rect) extends Control with Drawable{
 
   def draw() {
     //  glPushMatrix();
@@ -42,9 +44,17 @@ class SimpleButton(val rect: Rect) extends RectMouseable with Drawable {
     //glDisable(GL_BLEND);
   }
 
+
+  def mouseDown() {
+    DefaultConsole.log("Button Down!");
+  }
+
+  def mouseUp() {
+    DefaultConsole.log("Button UP!");
+  }
 }
 
-class TextRectButton(val text: String, val rect: Rect) extends RectMouseable with Drawable {
+class TextRectButton(val text: String, val rect: Rect, val action: ()=>Unit ) extends Control with Drawable {
   import rect._
 
   def draw() {
@@ -94,6 +104,15 @@ class TextRectButton(val text: String, val rect: Rect) extends RectMouseable wit
 
     glEnable(GL_TEXTURE_2D);
   }
+
+
+  def mouseDown() {
+    action();
+  }
+
+  def mouseUp() {
+
+  }
 }
 
 object Text2Rect {
@@ -102,7 +121,10 @@ object Text2Rect {
   }
 }
 
-class TextButton (override val text: String, val x: Int, val y: Int) extends TextRectButton(text, Text2Rect(x,y,text,"font05")) {
+object ConsoleCMD {
+  def apply(cmd: String): () => Unit = (() => DefaultConsole.execute(cmd));
+}
 
+class TextButton (override val text: String, val x: Int, val y: Int, cmd: String) extends TextRectButton(text, Text2Rect(x,y,text,"font05"), ConsoleCMD(cmd)) {
 
 }

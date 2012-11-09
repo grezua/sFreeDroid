@@ -4,6 +4,7 @@ import org.grez.sfreedroid.debug.GlobalDebugState
 import CmdParamType._
 import org.grez.sfreedroid.font.FontManager
 import org.grez.sfreedroid.DrawableEntitiesManager
+import scala.Some
 ;
 
 //wierd scala enums
@@ -35,6 +36,36 @@ object GridSwitchCMD extends ConsoleCmd("grid", Option(List(CmdParam("value", CP
     }
     console.logFromCommand("Setting grid to " + flag);
     GlobalDebugState.DrawGridFlag = flag;
+  }
+}
+
+object ToggleCMD extends ConsoleCmd("toggle", Option(List(CmdParam("value", CPTString, "grid, fps")))) {
+  val FPS = "fps";
+  val GRID = "grid"
+
+  def getHelp = "toggle some global state"
+
+  def execute(params: Option[List[Any]], console: Console) {
+    if (params.isEmpty) {
+      console.logFromCommand("toggle: unknown parameter");
+      return;
+    }
+
+    params.get(0) match {
+      case s: String if s == GRID => {
+        GlobalDebugState.DrawGridFlag = !GlobalDebugState.DrawGridFlag;
+      }
+      case s: String if s == FPS => {
+        if (DrawableEntitiesManager.isEntityPresent(FPS)) {
+          DrawableEntitiesManager.deleteEntry(FPS);
+        } else {
+          DrawableEntitiesManager.addEntity(FPS, GlobalDebugState.fpsMeter.getFPSDrawable(800,220),2);
+        }
+      }
+      case _ => {
+        console.logFromCommand("toggle: unknown parameter");
+      }
+    }
   }
 }
 
@@ -104,33 +135,33 @@ object ListAllFontsCMD extends ConsoleCmd("listfonts", None) {
   }
 }
 
-object ListAllDrawables extends  ConsoleCmd("listentities", None){
+object ListAllDrawables extends ConsoleCmd("listentities", None) {
   def getHelp = "prints all entities in session"
 
   def execute(params: Option[List[Any]], console: Console) {
-    console.logFromCommand(DrawableEntitiesManager.listAllEntries().foldLeft("Entities: \n")((l,s)=> l+ " "+ s));
+    console.logFromCommand(DrawableEntitiesManager.listAllEntries().foldLeft("Entities: \n")((l, s) => l + " " + s));
   }
 }
 
-object DeleteDrawable extends  ConsoleCmd("rementity", Some(List(CmdParam("name", CmdParamType.CPTString, "name of entity to delete")))){
+object DeleteDrawable extends ConsoleCmd("rementity", Some(List(CmdParam("name", CmdParamType.CPTString, "name of entity to delete")))) {
   def getHelp = "delete entity from session"
 
   def execute(params: Option[List[Any]], console: Console) {
-     val entName = params.get(0) match {
-          case s: String => s;
-          case _ => {
-            console.logFromCommand("invalid cmd");
-            return;
-          };
-        };
+    val entName = params.get(0) match {
+      case s: String => s;
+      case _ => {
+        console.logFromCommand("invalid cmd");
+        return;
+      };
+    };
 
-     DrawableEntitiesManager.deleteEntry(entName);
-     console.logFromCommand("-"+entName);
+    DrawableEntitiesManager.deleteEntry(entName);
+    console.logFromCommand("-" + entName);
   }
 
 }
 
 
 /*Default console impl*/
-object DefaultConsole extends Console(200, 1000, List(GreetCMD, GridSwitchCMD, FewParamsTestCMD, PrintCMDHistoryCMD,
+object DefaultConsole extends Console(200, 1000, List(GreetCMD, GridSwitchCMD, ToggleCMD, FewParamsTestCMD, PrintCMDHistoryCMD,
   QuitCMD, SetConsoleLogFontCMD, ListAllFontsCMD, ListAllDrawables, DeleteDrawable));

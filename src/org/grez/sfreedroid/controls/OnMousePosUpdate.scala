@@ -1,23 +1,32 @@
-package org.grez.controls
+package org.grez.sfreedroid.controls
 
 import org.grez.sfreedroid.textures.Rect
-import org.grez.sfreedroid.drawable.OnMousePosUpdate
 
 /**
  * Created with IntelliJ IDEA.
  * User: grez
- * Date: 11/3/12
- * Time: 11:51 PM
+ * Date: 11/9/12
+ * Time: 5:07 PM
  * To change this template use File | Settings | File Templates.
  */
-/*trait Mouseable extends OnMousePosUpdate{
+trait OnMousePosUpdate {
+  private var mouseX_ : Int = 0;
+  def mouseX = mouseX_
 
+  private var mouseY_ : Int = 0;
+  def mouseY = mouseY_
 
-  //def inputMouseCords(x: Int, y: Int);
-}*/
+   def updateMousePos(x: Int, y: Int) {
+     this.mouseX_ = x;
+     this.mouseY_ = 767 - y;
+   }
+}
 
-abstract class RectMouseable extends OnMousePosUpdate {
+abstract class Control extends OnMousePosUpdate {
   val rect: Rect;
+
+  def mouseDown();
+  def mouseUp();
 
   protected var isMouseOn_ = false;
   def isMouseOn = isMouseOn_;
@@ -32,3 +41,4 @@ abstract class RectMouseable extends OnMousePosUpdate {
   }
 
 }
+

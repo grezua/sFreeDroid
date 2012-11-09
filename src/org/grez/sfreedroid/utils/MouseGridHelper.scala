@@ -1,7 +1,9 @@
 package org.grez.sfreedroid.utils
 
-import org.grez.sfreedroid.drawable.OnMousePosUpdate;
-import org.grez.sfreedroid.MapDefaults._;
+;
+import org.grez.sfreedroid.MapDefaults._
+import org.grez.sfreedroid.controls.OnMousePosUpdate
+;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,9 +17,6 @@ class MouseGridHelper extends OnMousePosUpdate {
 
   case class TriangleHelper(xt: Int, yt: Int, cxOffset: Int, cyOffset: Int);
 
-
-  var my: Int = 0;
-  var mx: Int = 0;
 
   var flatCordMapX: Int = 0;
   var flatCordMapY: Int = 0;
@@ -36,14 +35,11 @@ class MouseGridHelper extends OnMousePosUpdate {
   override def updateMousePos(x: Int, y: Int) {
     super.updateMousePos(x, y);
 
-    my = mouseY //767 - mouseY;
-    mx = mouseX;
+    flatCordMapX = mouseX / DEF_WIDTH;
+    flatCordMapY = mouseY / DEF_HEIGHT;
 
-    flatCordMapX = mx / DEF_WIDTH;
-    flatCordMapY = my / DEF_HEIGHT;
-
-    localMX = mx % DEF_WIDTH;
-    localMY = my % DEF_HEIGHT;
+    localMX = mouseX % DEF_WIDTH;
+    localMY = mouseY % DEF_HEIGHT;
 
     transformed = transformCoords(localMX, localMY)
 

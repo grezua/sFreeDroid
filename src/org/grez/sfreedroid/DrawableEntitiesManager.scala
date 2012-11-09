@@ -1,7 +1,8 @@
 package org.grez.sfreedroid
 
 import collection.immutable.HashMap
-import drawable.{OnMousePosUpdate, TextDrawable, Drawable}
+import controls.{OnMousePosUpdate, Control}
+import drawable.{TextDrawable, Drawable}
 
 
 /**
@@ -12,10 +13,16 @@ import drawable.{OnMousePosUpdate, TextDrawable, Drawable}
  * To change this template use File | Settings | File Templates.
  */
 object DrawableEntitiesManager {
+
+
   private var entities: Map[String,(Int,Drawable)] = HashMap();
   private var sortedList: List[Drawable] = List();
-  private var mouseableEntities: Map[String, OnMousePosUpdate] = HashMap();
 
+  private var mouseableEntities: Map[String, OnMousePosUpdate] = HashMap();
+  private var controls: Map[String, Control] = HashMap();
+
+  private var selectedControl: Option[Control] = None;
+  private var controlWasClicked = false;
 
   private def updSortedList() {
     sortedList =  entities.values.toList.sortBy(_._1).unzip._2
@@ -23,6 +30,15 @@ object DrawableEntitiesManager {
 
   def updMousePos(x: Int, y: Int){
     mouseableEntities.values.foreach(_.updateMousePos(x,y));
+    if (selectedControl.isDefined){
+      selectedControl.get.updateMousePos(x,y);
+
+      if (!selectedControl.get.isMouseOn){
+        selectedControl = controls.values.find(p =>  {p.updateMousePos(x,y); p.isMouseOn})
+      }
+    } else {
+        selectedControl = controls.values.find(p =>  {p.updateMousePos(x,y); p.isMouseOn})
+    }
   }
 
   def drawAll(){
@@ -33,18 +49,17 @@ object DrawableEntitiesManager {
     entities += ((name,(layer,entity)));
     updSortedList();
 
-    if (entity.isInstanceOf[OnMousePosUpdate]){
-      mouseableEntities += ((name,entity.asInstanceOf[OnMousePosUpdate]));
+    entity match {
+      case c: Control => controls +=((name, c));
+      case m: OnMousePosUpdate => mouseableEntities += ((name,m));
+      case _  => ();
     }
+
   }
 
-/*  def addMouseableEntity(name: String, entity: Drawable with Mouseable, layer: Int = 0){
-
-    entities += ((name,(layer,entity)));
-    updSortedList();
-  }*/
 
   def deleteEntry(name: String) {
+    controls -= name;
     mouseableEntities -= name;
     entities -= name;
     updSortedList();
@@ -52,6 +67,24 @@ object DrawableEntitiesManager {
 
   def listAllEntries() = {
     entities.keys.toList;
+  }
+
+  def isEntityPresent(name: String): Boolean = {
+    entities.contains(name);
+  }
+
+  def processMouseDown(){
+    if (selectedControl.isDefined && !controlWasClicked) {
+      selectedControl.get.mouseDown();
+      controlWasClicked = true;
+    }
+  }
+
+  def noMouseDown(){
+    if (controlWasClicked) {
+       selectedControl.get.mouseUp();
+       controlWasClicked = false;
+    }
   }
 
 }

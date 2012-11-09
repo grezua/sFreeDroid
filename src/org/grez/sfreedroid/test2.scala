@@ -33,27 +33,24 @@ object test2   {
     import GlobalDebugState.fpsMeter
 
     val console = DefaultConsole;
-    val mouseHelper: MouseGridHelper = new MouseGridHelper();
+
 
     init();
 
     //val allTestTex: List[Texture] = (for (i <-0 to MapManager.allTestData.size -1) yield new Texture(MapManager.allTestData(i), textureIDBuffer.get(i))).toList;
+    val map = new MapDrawable();
 
-    DrawableEntitiesManager.addEntity("map", new MapDrawable(),0);
-    DrawableEntitiesManager.addEntity("mapGrid", new MapGridDrawable(mouseHelper),1);
+    DrawableEntitiesManager.addEntity("map", map,0);
+    DrawableEntitiesManager.addEntity("mapGrid", map.getGridDrawable,1);
     DrawableEntitiesManager.addEntity("fps", fpsMeter.getFPSDrawable(800,220),2);
-    DrawableEntitiesManager.addEntity("mousePos", new MouseGridDebugDrawable(mouseHelper),2);
-    DrawableEntitiesManager.addEntity("Togle Grid btn", new TextButton("togle grid", 40,635));
-    DrawableEntitiesManager.addEntity("Togle FPS btn", new TextButton("togle fps", 40,685));
-    DrawableEntitiesManager.addEntity("Togle Mouse Helper btn", new TextButton("togle mousepos", 40,735));
+    DrawableEntitiesManager.addEntity("mousePos", map.getGridDebugDrawable,2);
+    DrawableEntitiesManager.addEntity("Togle Grid btn", new TextButton("toggle grid", 40,635, "toggle grid"),2);
+    DrawableEntitiesManager.addEntity("Togle FPS btn", new TextButton("toggle fps", 40,685, "toggle fps"),2);
+    DrawableEntitiesManager.addEntity("Togle Mouse Helper btn", new TextButton("toggle mousepos", 40,735, "greet"),2);
 
     var finished = false;
 
 //    imgLoader.allTestData.foreach( (d: ImgData) => println("w:  "+ d.w + "; h: "+ d.h + " ; offsetX:"+d.offsetX+"; offsetY: "+d.offsetY));
-
-    def mapaClck(x:Int, y:Int){
-      if (MapManager.mapa(x)(y) >= NUM_OF_IDS) MapManager.mapa(x)(y) = 0 else MapManager.mapa(x)(y) +=1;
-    }
 
 
     while (!finished){
@@ -62,7 +59,6 @@ object test2   {
       Mouse.poll();
       Keyboard.poll();
       DrawableEntitiesManager.updMousePos(Mouse.getX, Mouse.getY);
-      mouseHelper.updateMousePos(Mouse.getX, Mouse.getY);
 
       while (Keyboard.next()) {
       //  println(Keyboard.getEventCharacter.toString +" "+ Keyboard.getEventKeyState);
@@ -78,8 +74,11 @@ object test2   {
 
 
       if (Mouse.isButtonDown(0)){
-        mapaClck(mouseHelper.selectedX, mouseHelper.selectedY);
+        DrawableEntitiesManager.processMouseDown();
+      }else {
+        DrawableEntitiesManager.noMouseDown();
       }
+
       finished = isKeyDown(KEY_ESCAPE) || Display.isCloseRequested;
 
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)

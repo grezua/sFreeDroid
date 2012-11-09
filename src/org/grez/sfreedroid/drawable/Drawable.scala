@@ -11,12 +11,6 @@ trait Drawable {
    def draw();
 }
 
-trait OnMousePosUpdate {
-   protected var mouseX: Int = 0;
-   protected var mouseY: Int = 0;
 
-   def updateMousePos(x: Int, y: Int) {
-     this.mouseX = x;
-     this.mouseY = 767 - y;
-   }
-}
+
+ ; //marker used for controls!
