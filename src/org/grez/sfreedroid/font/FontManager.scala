@@ -100,19 +100,27 @@ object FontManager {
 
   def isFontExists(fontName: String): Boolean = allFonts.contains(fontName);
 
+  def getTextWidth(str: String, fontName: String): Int = {
+    val fc = allFonts(fontName).map.orNull;
+    if (null == fc) return 0;
+
+    str.foldLeft(0)((int,chr) => int + fc.get(chr).orElse(fc.get('?')).get.tx.widt)
+  }
+
   def drawText(x: Int, y: Int, str: String, fontName: String) {
 
     glPushMatrix();
     glTranslatef(x, y, 0);
-    val fc = allFonts(fontName);
+    val fc =  allFonts(fontName).map.orNull;
+    if (null == fc) return ;
 
     str.foreach((f: Char) => {
       f match {
         case ' ' => glTranslatef(10, 0, 0);
         case _ => {
-          fc.map.get.get(f) match {
+          fc.get(f) match {
             case None => {
-               fc.map.get('?').tx.draw();
+               fc.get('?').get.tx.draw();
                glTranslatef(10, 0, 0);
             }
             case c: Some[CharConfig] => {

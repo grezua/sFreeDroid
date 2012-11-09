@@ -2,6 +2,7 @@ package org.grez.sfreedroid.textures
 
 import org.lwjgl.opengl.GL11._
 import java.util.logging.{Level, Logger}
+import collection.mutable
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,7 +15,7 @@ import java.util.logging.{Level, Logger}
 private[textures] object FreeTxId {
   import collection.mutable.HashSet
 
-  val usedIds: HashSet[Int] = new HashSet[Int]();
+  val usedIds: mutable.Set[Int] =  new mutable.HashSet[Int]();
   var fc: Int = 1;
 
   def findFreId():Int = {
