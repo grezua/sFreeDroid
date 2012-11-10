@@ -19,11 +19,11 @@ object GreetCMD extends ConsoleCmd("greet", None) {
   }
 }
 
-object ToggleCMD extends ConsoleCmd("toggle", Option(List(CmdParam("value", CPTString, "grid, fps, mousepos")))) {
+object ToggleCMD extends ConsoleCmd("toggle", CmdParamsList(CmdParam("value", CPTString, "grid, fps, mousepos", AutoIdentList("grid", "fps", "mousepos")))) {
   val FPS = "fps";
   val GRID = "grid"
   val MOUSEPOS = "mousepos"
-  val DBGMOUSEPOS = "dbg mousepos"
+  val DBGMOUSEPOS = "dbg_mousepos"
 
   def getHelp = "toggle some global state"
 
@@ -64,16 +64,6 @@ object ToggleCMD extends ConsoleCmd("toggle", Option(List(CmdParam("value", CPTS
   }
 }
 
-object FewParamsTestCMD extends ConsoleCmd("test", Option(List(CmdParam("value", CPTBoolean, "value bool param! ^_^!"),
-  CmdParam("a2", CPTString, "some String Param!"), CmdParam("a3", CPTInt, "Some another Int Param")))) {
-
-  def getHelp = "awesome help hee and ther \n no text attached!"
-
-  def execute(params: Option[List[Any]], console: Console) {
-    console.logFromCommand("alot of text is going here \t \n fld;askf';lkasd'f;ldsafk';sdlafk'lfhgiery0q9t8reytgreoqh\n \n skafhkldahflkdhflk\nsdjjhfkjsdahfj\t\nklddjf;sajf")
-  }
-}
-
 object PrintCMDHistoryCMD extends ConsoleCmd("printhistory", None) {
   def getHelp = "prints all history commands"
 
@@ -92,8 +82,12 @@ object QuitCMD extends ConsoleCmd("quit", None) {
   }
 }
 
-object SetConsoleLogFontCMD extends ConsoleCmd("setconsolefont", Option(List(CmdParam("fontVarIdx", CPTInt, "wich font to change (possible values: 0,1,2)"),
-  CmdParam("fontName", CPTString, "name of the font")))) {
+private object FontAutoIdentList extends SecondLevelAutoidentListProvider {
+  def getStrList = FontManager.getAllFontNames;
+}
+
+object SetConsoleLogFontCMD extends ConsoleCmd("setconsolefont", CmdParamsList(CmdParam("fontVarIdx", CPTInt, "wich font to change (possible values: 0,1,2)", AutoIdentList("0","1","2")),
+  CmdParam("fontName", CPTString, "name of the font", Some(FontAutoIdentList) ))) {
   def getHelp = "sets the font for console"
 
   def execute(params: Option[List[Any]], console: Console) {
@@ -138,7 +132,11 @@ object ListAllDrawables extends ConsoleCmd("listentities", None) {
   }
 }
 
-object DeleteDrawable extends ConsoleCmd("rementity", Some(List(CmdParam("name", CmdParamType.CPTString, "name of entity to delete")))) {
+private object EntitiesAutoIdentHelper extends SecondLevelAutoidentListProvider {
+  def getStrList = DrawableEntitiesManager.listAllEntries();
+}
+
+object DeleteDrawable extends ConsoleCmd("rementity", CmdParamsList(CmdParam("name", CmdParamType.CPTString, "name of entity to delete", Some(EntitiesAutoIdentHelper)))) {
   def getHelp = "delete entity from session"
 
   def execute(params: Option[List[Any]], console: Console) {
@@ -158,5 +156,5 @@ object DeleteDrawable extends ConsoleCmd("rementity", Some(List(CmdParam("name",
 
 
 /*Default console impl*/
-object DefaultConsole extends Console(200, 1000, List(GreetCMD, ToggleCMD, FewParamsTestCMD, PrintCMDHistoryCMD,
-  QuitCMD, SetConsoleLogFontCMD, ListAllFontsCMD, ListAllDrawables, DeleteDrawable));
+object DefaultConsole extends Console(200, 1000, List(GreetCMD, ToggleCMD, PrintCMDHistoryCMD, QuitCMD,
+  SetConsoleLogFontCMD, ListAllFontsCMD, ListAllDrawables, DeleteDrawable));

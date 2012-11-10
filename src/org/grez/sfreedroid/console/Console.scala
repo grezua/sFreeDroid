@@ -175,11 +175,19 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd]) e
     regCmds.filter(cmd => cmd.cmd.startsWith(s));
   }
 
+  def searchCmdStrict(s: String): Option[ConsoleCmd] = {
+    regCmds.find(cmd => s.equals(cmd.cmd));
+  }
+
   def autoAppendToCommon(l: List[ConsoleCmd]): String = {
+    autoAppendToCommonStr(l.map(c => c.cmd));
+  }
+
+  def autoAppendToCommonStr(l: List[String]): String = {
     def fidex (i: Int): Boolean = {
-      val letter = l(0).cmd.charAt(i);
+      val letter = l(0).charAt(i);
       for {j <- 1 until l.size } {
-        if (i >= l(j).cmd.size  || letter != l(j).cmd.charAt(i)) return false;
+        if (i >= l(j).size  || letter != l(j).charAt(i)) return false;
       }
       true;
     }
@@ -189,7 +197,7 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd]) e
       i += 1;
     }
 
-    l(0).cmd.take(i);
+    l(0).take(i);
   }
 
   def execute(cmd: String) {
@@ -234,15 +242,7 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd]) e
         cmdHistory.historyPosUp(cmd);
       };
       case KEY_TAB => {
-        val foundCmds = searchStrCMD(cmd);
-        foundCmds match {
-          case l if l.isEmpty => cmd;
-          case l if l.size == 1 => l(0).cmd;
-          case l => {
-            log(l.foldLeft("possible cmds:\n")((st, curr) => st+ "\t" + curr.cmd + "\n"))
-            autoAppendToCommon(l);
-          }
-        }
+        processTab(cmd)
       };
       case _ => c match {
         case '?' => {
@@ -258,6 +258,62 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd]) e
         case _ => cmd;
       };
     }
+  }
+
+  private def processPrimaryTab(cmd_s: String): String = {
+      //first level auto ident!
+            val foundCmds = searchStrCMD(cmd_s);
+            foundCmds match {
+              case l if l.isEmpty => cmd_s;
+              case l if l.size == 1 => l(0).cmd;
+              case l => {
+                log(l.foldLeft("possible cmds:\n")((st, curr) => st + "\t" + curr.cmd + "\n"))
+                autoAppendToCommon(l);
+              }
+            }
+  }
+
+  private def processSecondaryTab(cmd_s: String, args: Array[String]): String ={
+
+    val firstLevelCMD = searchCmdStrict(args(0))
+    val paramsArg  =  { //args list without cmd itself, and spaces.
+     val tArgs = args.tail.filter(s => !s.isEmpty)
+       if (cmd_s.last == ' ') tArgs :+ "" else tArgs;
+    };
+
+    val pArg = paramsArg.last;
+    val idxArg = paramsArg.size -1;
+
+    firstLevelCMD match {
+      case None => cmd_s; //first argument is not a cmd!
+      case l: Some[ConsoleCmd] if l.get.params.isEmpty || l.get.params.get.size -1 < idxArg => cmd_s; //params list is empty, or doesn't fit
+      case l: Some[ConsoleCmd] if l.get.params.get(idxArg).autoidentProvider.isEmpty => cmd_s; //param doesn't contain autoidentProvider
+      case l => {
+
+        val paramsList = l.get.params.get(idxArg).autoidentProvider.get.getStrList;
+        val searchParamsList = if(pArg.isEmpty) paramsList else paramsList.filter(str => str.startsWith(pArg))
+
+        def foldParams: String = {
+          args.head +" " + paramsArg.init.foldLeft("")((s, a) => s + a + " ")
+        }
+
+        searchParamsList match {
+          case ll if ll.isEmpty => cmd_s;
+          case ll if ll.size == 1 => foldParams + ll(0);
+          case ll => {
+            log(ll.foldLeft("possible cmds:\n")((st, curr) => st + "\t" + curr + "\n"));
+            foldParams + autoAppendToCommonStr(ll);
+          }
+        }
+      }
+    }
+  }
+
+  private def processTab(cmd_s: String): String = {
+    val args = cmd_s.split(' ');
+
+    if (args.size <= 0) return cmd_s;
+    if (args.size == 1 && (cmd.isEmpty || cmd_s.last != ' ')) processPrimaryTab(cmd_s) else processSecondaryTab(cmd_s, args)
   }
 
   def draw(){
@@ -331,9 +387,30 @@ object CmdParamType extends Enumeration("CPTInt", "CPTString", "CPTFloat", "CPTB
   }
 }
 
+abstract class SecondLevelAutoidentListProvider {
+  def getStrList: List[String];
+}
+
+object AutoIdentList {
+  def apply(xs: String*): Some[SecondLevelAutoidentListProvider] = {
+    Some (new SecondLevelAutoidentListProvider {
+      def getStrList = xs.toList;
+    });
+  }
+}
+
 import CmdParamType._; //wierd scala enums
 
-case class CmdParam(name: String, paramType: CmdParamType, help: String);
+case class CmdParam(name: String, paramType: CmdParamType, help: String, autoidentProvider: Option[SecondLevelAutoidentListProvider] = None);
+
+object CmdParamsList {
+  def apply(xs: CmdParam*):Option[List[CmdParam]] = {
+    Some(xs.toList);
+  }
+  /*def apply(name: String, paramType: CmdParamType, help: String, autoidentProvider: Option[SecondLevelAutoidentListProvider] = None): Option[CmdParam] = {
+    Some(CmdParam(name,paramType,help,autoidentProvider));
+  }*/
+}
 
 abstract class ConsoleCmd (val cmd: String, val params: Option[List[CmdParam]]) {
      def fullHelp:String = {
