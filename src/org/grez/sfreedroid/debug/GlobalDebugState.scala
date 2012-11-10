@@ -1,6 +1,7 @@
 package org.grez.sfreedroid.debug
 
 import org.grez.sfreedroid.utils.FPSMeter
+import org.grez.sfreedroid.drawable.MapDrawable
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,7 +13,7 @@ import org.grez.sfreedroid.utils.FPSMeter
 
 object GlobalDebugState {
 
-  var DrawGridFlag: Boolean = false;
   lazy val fpsMeter =  new FPSMeter;
+  lazy val mapDrawable = new MapDrawable();
 
 }

@@ -27,6 +27,17 @@ private[drawable] class MouseGridDebugDrawable(val mouseGridHelper: MouseGridHel
 
   }
 
+}
+
+private[drawable] class MousePosDrawable(val mouseGridHelper: MouseGridHelper) extends Drawable  {
+
+  def draw() {
+    import mouseGridHelper._
+
+    FontManager.drawText(800, 30, "mouseX=" + mouseX, "redfont");
+    FontManager.drawText(800, 60, "mouseY=" + mouseY, "redfont");
+    FontManager.drawText(800, 90, "map tile[" + selectedX + "," + selectedY + "]", "redfont");
+  }
 
 }
 

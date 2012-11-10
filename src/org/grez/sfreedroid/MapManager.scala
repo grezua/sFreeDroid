@@ -83,8 +83,9 @@ object MapManager {
 
     val base = "./graphics/flor/iso_sidewalk_"; // "./graphics/flor/iso_carpet_tile_" ;
     val base1 = "./graphics/flor/iso_miscellaneous_floor_"
+    val base2 = "./graphics/flor/iso_sand_floor_"
 
-    genList(base, 24) ::: genList(base1, 23);
+    genList(base, 24) ::: genList(base1, 23) ::: genList(base2, 6);
   }
 
   def getMapRect(x: Int, y: Int): Rect = {

@@ -53,15 +53,15 @@ class MapDrawable extends Drawable with OnMousePosUpdate {
     if (MapManager.mapa(x)(y) >= NUM_OF_IDS) MapManager.mapa(x)(y) = 0 else MapManager.mapa(x)(y) +=1;
   }
 
-  def getGridDrawable = new MapGridDrawable(mouseHelper);
-  def getGridDebugDrawable = new MouseGridDebugDrawable(mouseHelper);
+  lazy val getGridDrawable = new MapGridDrawable(mouseHelper);
+  lazy val getGridDebugDrawable = new MouseGridDebugDrawable(mouseHelper);
+  lazy val getMousePosDrawable = new MousePosDrawable(mouseHelper)
 }
 
 private[drawable] class MapGridDrawable(val mouseHelper: MouseGridHelper) extends Drawable {
   def draw() {
-    if (GlobalDebugState.DrawGridFlag){
-      import mouseHelper._
+       import mouseHelper._
+
        MapManager.drawGrid(selectedX,selectedY,flatCordMapX,flatCordMapY);
-    }
   }
 }

@@ -1,11 +1,10 @@
-package org.grez.controls
+package org.grez.sfreedroid.controls
 
 import org.grez.sfreedroid.drawable.Drawable
 import org.lwjgl.opengl.GL11._
-import org.grez.sfreedroid.textures.Rect
+import org.grez.sfreedroid.textures.{Color, Rect}
 import org.grez.sfreedroid.font.FontManager
 import org.grez.sfreedroid.console.DefaultConsole
-import org.grez.sfreedroid.controls.Control
 
 
 /**
@@ -16,53 +15,15 @@ import org.grez.sfreedroid.controls.Control
  * To change this template use File | Settings | File Templates.
  */
 
-class SimpleButton(val rect: Rect) extends Control with Drawable{
-
-  def draw() {
-    //  glPushMatrix();
-    //  glTranslatef(0.0f, 0.0f, 0.0f)
-    glShadeModel(GL_FLAT);
-    glDisable(GL_TEXTURE_2D);
-    //glEnable(GL_BLEND);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    if (isMouseOn) {
-      glColor3f(0.8f, 0.5f, 0.2f);
-    } else {
-      glColor3f(0.3f, 0.5f, 0.8f);
-    }
-
-    glBegin(GL_QUADS);
-    import rect._
-
-    glVertex2i(leftTop.getX, leftTop.getY);
-    glVertex2i(rightTop.getX, rightTop.getY);
-    glVertex2i(rightBottom.getX, rightBottom.getY);
-    glVertex2i(leftBottom.getX, leftBottom.getY);
-    glEnd();
-    glEnable(GL_TEXTURE_2D);
-    //   glPopMatrix();
-    //glDisable(GL_BLEND);
-  }
-
-
-  def mouseDown() {
-    DefaultConsole.log("Button Down!");
-  }
-
-  def mouseUp() {
-    DefaultConsole.log("Button UP!");
-  }
-}
-
 class TextRectButton(val text: String, val rect: Rect, val action: ()=>Unit ) extends Control with Drawable {
   import rect._
 
   def draw() {
    // glShadeModel(GL_FLAT);
 
-    drawButtonBody(0.8f, 0.5f, 0.2f);
+    drawButtonBody(Color(0.8f, 0.5f, 0.2f));
     if (isMouseOn) {
-      drawButtonBorder(0.3f, 0.5f, 0.8f);
+      drawButtonBorder(Color(0.3f, 0.5f, 0.8f));
       FontManager.drawText(leftTop.getX + 5, leftTop.getY + 5,text, "font05_blue");
     } else {
       FontManager.drawText(leftTop.getX + 5, leftTop.getY + 5,text, "font05");
@@ -70,7 +31,9 @@ class TextRectButton(val text: String, val rect: Rect, val action: ()=>Unit ) ex
   }
 
 
-  def drawButtonBorder(red: Float, green: Float, blue: Float)  {
+  def drawButtonBorder(color: Color)  {
+    import color._
+
     glColor3f(red, green, blue);
 
     glDisable(GL_TEXTURE_2D);
@@ -91,7 +54,8 @@ class TextRectButton(val text: String, val rect: Rect, val action: ()=>Unit ) ex
     glEnable(GL_TEXTURE_2D);
   }
 
-  def drawButtonBody(red: Float, green: Float, blue: Float) {
+  def drawButtonBody(color: Color) {
+    import color._
     glColor3f(red, green, blue);
 
     glDisable(GL_TEXTURE_2D);

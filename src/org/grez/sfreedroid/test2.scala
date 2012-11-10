@@ -9,49 +9,38 @@ package org.grez.sfreedroid
  */
 
 
-import console.DefaultConsole
+import console.Console
+import controls.BottomControlsPanelManager
 import debug.GlobalDebugState
-import drawable._
 
 import org.lwjgl._
 import input.Keyboard._
 import input.{Keyboard, Mouse}
-import opengl.{GL14, Display, GL11, DisplayMode}
+import opengl.{Display, GL11, DisplayMode}
 import GL11._
 import java.nio.IntBuffer
-import textures.Rect
-import util.Point
-import utils.MouseGridHelper
-import org.grez.controls._;
+
 
 
 object test2   {
 
 
   def main(args: Array[String]) {
-    import MapDefaults._
-    import GlobalDebugState.fpsMeter
+    import GlobalDebugState.fpsMeter ;
+    import GlobalDebugState.{mapDrawable => map};
+    import console.{DefaultConsole => console};
 
-    val console = DefaultConsole;
-
-
-    init();
-
-    //val allTestTex: List[Texture] = (for (i <-0 to MapManager.allTestData.size -1) yield new Texture(MapManager.allTestData(i), textureIDBuffer.get(i))).toList;
-    val map = new MapDrawable();
+    init(console);
 
     DrawableEntitiesManager.addEntity("map", map,0);
-    DrawableEntitiesManager.addEntity("mapGrid", map.getGridDrawable,1);
-    DrawableEntitiesManager.addEntity("fps", fpsMeter.getFPSDrawable(800,220),2);
-    DrawableEntitiesManager.addEntity("mousePos", map.getGridDebugDrawable,2);
-    DrawableEntitiesManager.addEntity("Togle Grid btn", new TextButton("toggle grid", 40,635, "toggle grid"),2);
-    DrawableEntitiesManager.addEntity("Togle FPS btn", new TextButton("toggle fps", 40,685, "toggle fps"),2);
-    DrawableEntitiesManager.addEntity("Togle Mouse Helper btn", new TextButton("toggle mousepos", 40,735, "greet"),2);
+    //DrawableEntitiesManager.addEntity("mapGrid", map.getGridDrawable,1);
+    //DrawableEntitiesManager.addEntity("fps", fpsMeter.getFPSDrawable(800,220),2);
+    DrawableEntitiesManager.addEntity("mousepos", map.getMousePosDrawable,2);
+    val pannel = new  BottomControlsPanelManager
+    pannel.addControlsPanel();
+
 
     var finished = false;
-
-//    imgLoader.allTestData.foreach( (d: ImgData) => println("w:  "+ d.w + "; h: "+ d.h + " ; offsetX:"+d.offsetX+"; offsetY: "+d.offsetY));
-
 
     while (!finished){
       Display.sync(60);
@@ -102,8 +91,8 @@ object test2   {
   }
 
 
-  private def init() {
-    val console = DefaultConsole;
+  private def init(console: Console) {
+
     Display.setTitle("SFreeDroid")
     Display.setFullscreen(false)
     Display.setVSyncEnabled(false)
@@ -115,7 +104,7 @@ object test2   {
     Keyboard.enableRepeatEvents(false);
 
     val isvsize = glGetInteger(GL_MAX_TEXTURE_SIZE);
-    console.log(isvsize);
+    console.log("GL_MAX_TEXTURE_SIZE = "+ isvsize);
 
     glEnable(GL_TEXTURE_2D)
     glDisable(GL_DEPTH_TEST)

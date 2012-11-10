@@ -19,29 +19,11 @@ object GreetCMD extends ConsoleCmd("greet", None) {
   }
 }
 
-object GridSwitchCMD extends ConsoleCmd("grid", Option(List(CmdParam("value", CPTBoolean, "true or false")))) {
-  def getHelp = "enable or disable draving of grid";
-
-  def execute(params: Option[List[Any]], console: Console) {
-    if (params.isEmpty) {
-      console.logFromCommand("grid: unknown parameter");
-      return;
-    }
-    val flag: Boolean = params.get(0) match {
-      case g: Boolean => g;
-      case _ => {
-        console.logFromCommand("grid: unknown parameter");
-        return; //execute probably
-      };
-    }
-    console.logFromCommand("Setting grid to " + flag);
-    GlobalDebugState.DrawGridFlag = flag;
-  }
-}
-
-object ToggleCMD extends ConsoleCmd("toggle", Option(List(CmdParam("value", CPTString, "grid, fps")))) {
+object ToggleCMD extends ConsoleCmd("toggle", Option(List(CmdParam("value", CPTString, "grid, fps, mousepos")))) {
   val FPS = "fps";
   val GRID = "grid"
+  val MOUSEPOS = "mousepos"
+  val DBGMOUSEPOS = "dbg mousepos"
 
   def getHelp = "toggle some global state"
 
@@ -53,7 +35,11 @@ object ToggleCMD extends ConsoleCmd("toggle", Option(List(CmdParam("value", CPTS
 
     params.get(0) match {
       case s: String if s == GRID => {
-        GlobalDebugState.DrawGridFlag = !GlobalDebugState.DrawGridFlag;
+        if (DrawableEntitiesManager.isEntityPresent(GRID)) {
+          DrawableEntitiesManager.deleteEntry(GRID);
+        } else {
+          DrawableEntitiesManager.addEntity(GRID, GlobalDebugState.mapDrawable.getGridDrawable, 1);
+        }
       }
       case s: String if s == FPS => {
         if (DrawableEntitiesManager.isEntityPresent(FPS)) {
@@ -61,6 +47,15 @@ object ToggleCMD extends ConsoleCmd("toggle", Option(List(CmdParam("value", CPTS
         } else {
           DrawableEntitiesManager.addEntity(FPS, GlobalDebugState.fpsMeter.getFPSDrawable(800,220),2);
         }
+      } case s: String if s == MOUSEPOS => {
+          if (DrawableEntitiesManager.isEntityPresent(DBGMOUSEPOS)){ //cycle through 3 states: simple mouse pos, debug mouse pos, and none
+            DrawableEntitiesManager.deleteEntry(DBGMOUSEPOS);
+          } else if (DrawableEntitiesManager.isEntityPresent(MOUSEPOS)){
+            DrawableEntitiesManager.deleteEntry(MOUSEPOS);
+            DrawableEntitiesManager.addEntity(DBGMOUSEPOS, GlobalDebugState.mapDrawable.getGridDebugDrawable,2);
+          } else {
+            DrawableEntitiesManager.addEntity(MOUSEPOS, GlobalDebugState.mapDrawable.getMousePosDrawable,2);
+          }
       }
       case _ => {
         console.logFromCommand("toggle: unknown parameter");
@@ -163,5 +158,5 @@ object DeleteDrawable extends ConsoleCmd("rementity", Some(List(CmdParam("name",
 
 
 /*Default console impl*/
-object DefaultConsole extends Console(200, 1000, List(GreetCMD, GridSwitchCMD, ToggleCMD, FewParamsTestCMD, PrintCMDHistoryCMD,
+object DefaultConsole extends Console(200, 1000, List(GreetCMD, ToggleCMD, FewParamsTestCMD, PrintCMDHistoryCMD,
   QuitCMD, SetConsoleLogFontCMD, ListAllFontsCMD, ListAllDrawables, DeleteDrawable));
