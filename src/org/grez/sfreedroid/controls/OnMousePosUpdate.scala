@@ -18,26 +18,20 @@ trait OnMousePosUpdate {
 
    def updateMousePos(x: Int, y: Int) {
      this.mouseX_ = x;
-     this.mouseY_ = 767 - y;
+     this.mouseY_ = y; //767 - y;
    }
 }
 
-abstract class Control extends OnMousePosUpdate {
+abstract class Control  {
   val rect: Rect;
 
   def mouseDown();
   def mouseUp();
 
-  protected var isMouseOn_ = false;
-  def isMouseOn = isMouseOn_;
+  var isMouseOn = false;
 
-  override def updateMousePos(x: Int, y: Int) {
-    super.updateMousePos(x, y);
-
-    if (rect.isCordsWithin(mouseX,mouseY))
-          isMouseOn_ = true;
-        else
-          isMouseOn_ = false;
+  def checkMouseOn(x: Int, y: Int): Boolean = {
+    (rect.isCordsWithin(x,y));
   }
 
 }
