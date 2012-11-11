@@ -33,8 +33,6 @@ object test2   {
     init(console);
 
     DrawableEntitiesManager.addEntity("map", map,0);
-    //DrawableEntitiesManager.addEntity("mapGrid", map.getGridDrawable,1);
-    //DrawableEntitiesManager.addEntity("fps", fpsMeter.getFPSDrawable(800,220),2);
     DrawableEntitiesManager.addEntity("mousepos", map.getMousePosDrawable,2);
     val pannel = new  BottomControlsPanelManager
     pannel.addControlsPanel();

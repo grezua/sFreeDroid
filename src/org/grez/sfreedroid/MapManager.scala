@@ -18,7 +18,7 @@ import utils.{NumberUtils, FileUtils}
  */
 
 object MapDefaults {
-  val SIZE_X = 8;
+  val SIZE_X = 9;
   val SIZE_Y = 18;
   val NUM_OF_IDS = 40;
   val DEF_WIDTH = 134;

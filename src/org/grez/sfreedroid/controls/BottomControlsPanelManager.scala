@@ -20,8 +20,16 @@ class BottomControlsPanelManager {
     DrawableEntitiesManager.addEntity("Togle_Grid_btn", new TextButton("toggle grid", 40,635, "toggle grid"),3);
     DrawableEntitiesManager.addEntity("Togle_FPS_btn", new TextButton("toggle fps", 40,685, "toggle fps"),3);
     DrawableEntitiesManager.addEntity("Togle_MousePos_btn", new TextButton("toggle mousepos", 40,735, "toggle mousepos"),3);
+    DrawableEntitiesManager.addEntity("Hide_Toolbar_btn" , new TextActionButton("^",500,540,hideToolbarAction), 3);
   }
+
+  val hideToolbarAction: () => Unit = (()=> {
+    DrawableEntitiesManager.deleteEntries("Bottom_Panel", "Togle_Grid_btn", "Togle_FPS_btn", "Togle_MousePos_btn", "Hide_Toolbar_btn");
+    DrawableEntitiesManager.addEntity("Bottom_Panel", new SimpleRect(Rect((0,760),(1024,768)),Color(0f,0f,0f)),2);
+    DrawableEntitiesManager.addEntity("Hide_Toolbar_btn" , new TextActionButton("^",500,740,(() => addControlsPanel())), 3);
+  })
 }
+
 
 class SimpleRect(val rect: Rect, color: Color) extends  Drawable{
 

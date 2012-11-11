@@ -57,6 +57,9 @@ object DrawableEntitiesManager {
 
   }
 
+  def deleteEntries(xs: String*){
+    xs.foreach( deleteEntry(_));
+  }
 
   def deleteEntry(name: String) {
     controls -= name;

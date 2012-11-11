@@ -89,6 +89,5 @@ object ConsoleCMD {
   def apply(cmd: String): () => Unit = (() => DefaultConsole.execute(cmd));
 }
 
-class TextButton (override val text: String, val x: Int, val y: Int, cmd: String) extends TextRectButton(text, Text2Rect(x,y,text,"font05"), ConsoleCMD(cmd)) {
-
-}
+class TextButton (override val text: String, val x: Int, val y: Int, cmd: String) extends TextRectButton(text, Text2Rect(x,y,text,"font05"), ConsoleCMD(cmd)) ;
+class TextActionButton(override val text: String, val x: Int, val y: Int, override val action: ()=>Unit ) extends TextRectButton(text, Text2Rect(x,y,text,"font05"),action);

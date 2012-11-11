@@ -5,9 +5,6 @@ import CmdParamType._
 import org.grez.sfreedroid.font.FontManager
 import org.grez.sfreedroid.DrawableEntitiesManager
 import scala.Some
-;
-
-//wierd scala enums
 
 /* Console command Implementations!  */
 
@@ -21,6 +18,7 @@ object GreetCMD extends ConsoleCmd("greet", None) {
 
 object ToggleCMD extends ConsoleCmd("toggle", CmdParamsList(CmdParam("value", CPTString, "grid, fps, mousepos", AutoIdentList("grid", "fps", "mousepos")))) {
   val FPS = "fps";
+  val FPSHISTOGRAMM = "fps_histogramm";
   val GRID = "grid"
   val MOUSEPOS = "mousepos"
   val DBGMOUSEPOS = "dbg_mousepos"
@@ -44,6 +42,9 @@ object ToggleCMD extends ConsoleCmd("toggle", CmdParamsList(CmdParam("value", CP
       case s: String if s == FPS => {
         if (DrawableEntitiesManager.isEntityPresent(FPS)) {
           DrawableEntitiesManager.deleteEntry(FPS);
+          DrawableEntitiesManager.addEntity(FPSHISTOGRAMM, GlobalDebugState.fpsMeter.getHistogramDrawable(800,220),2);
+        } else if (DrawableEntitiesManager.isEntityPresent(FPSHISTOGRAMM)) {
+          DrawableEntitiesManager.deleteEntry(FPSHISTOGRAMM);
         } else {
           DrawableEntitiesManager.addEntity(FPS, GlobalDebugState.fpsMeter.getFPSDrawable(800,220),2);
         }
