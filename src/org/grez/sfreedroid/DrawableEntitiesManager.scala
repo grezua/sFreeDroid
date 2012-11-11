@@ -21,7 +21,7 @@ object DrawableEntitiesManager {
   private var mouseableEntities: Map[String, OnMousePosUpdate] = HashMap();
   private var controls: Map[String, Control] = HashMap();
 
-  private var selectedControl: Option[Control] = None;
+  private var selectedControl: Option[(String,Control)] = None;
   private var controlWasClicked = false;
 
   private def updSortedList() {
@@ -31,13 +31,13 @@ object DrawableEntitiesManager {
   def updMousePos(x: Int, y: Int){
     mouseableEntities.values.foreach(_.updateMousePos(x,y));
     if (selectedControl.isDefined){
-      selectedControl.get.updateMousePos(x,y);
+      selectedControl.get._2.updateMousePos(x,y);
 
-      if (!selectedControl.get.isMouseOn){
-        selectedControl = controls.values.find(p =>  {p.updateMousePos(x,y); p.isMouseOn})
+      if (!selectedControl.get._2.isMouseOn){
+        selectedControl = controls.find(p =>  {p._2.updateMousePos(x,y); p._2.isMouseOn})
       }
     } else {
-        selectedControl = controls.values.find(p =>  {p.updateMousePos(x,y); p.isMouseOn})
+        selectedControl = controls.find(p =>  {p._2.updateMousePos(x,y); p._2.isMouseOn})
     }
   }
 
@@ -65,6 +65,9 @@ object DrawableEntitiesManager {
     controls -= name;
     mouseableEntities -= name;
     entities -= name;
+    if (selectedControl.isDefined && selectedControl.get._1 == name){
+      selectedControl = None;
+    }
     updSortedList();
   }
 
@@ -78,14 +81,16 @@ object DrawableEntitiesManager {
 
   def processMouseDown(){
     if (selectedControl.isDefined && !controlWasClicked) {
-      selectedControl.get.mouseDown();
+      selectedControl.get._2.mouseDown();
       controlWasClicked = true;
     }
   }
 
   def noMouseDown(){
-    if (controlWasClicked) {
-       selectedControl.get.mouseUp();
+    if (controlWasClicked ) {
+      if (selectedControl.isDefined){
+        selectedControl.get._2.mouseUp();
+      }
        controlWasClicked = false;
     }
   }

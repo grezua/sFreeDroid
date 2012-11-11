@@ -15,23 +15,32 @@ import org.grez.sfreedroid.console.DefaultConsole
  * To change this template use File | Settings | File Templates.
  */
 
-class TextRectButton(val text: String, val rect: Rect, val action: ()=>Unit ) extends Control with Drawable {
+class TextRectButton(val text: String, override val rect: Rect, val action: ()=>Unit ) extends Control with Drawable {
   import rect._
+
+  private val bodyColor = Color(0.8f, 0.5f, 0.2f);
+  private val selectedBorderColor = Color(0.3f, 0.5f, 0.8f);
+  private val textFont = "font05";
+  private val selectedTextFont = "font05_blue";
 
   def draw() {
    // glShadeModel(GL_FLAT);
 
-    drawButtonBody(Color(0.8f, 0.5f, 0.2f));
+    drawButtonBody(bodyColor);
     if (isMouseOn) {
-      drawButtonBorder(Color(0.3f, 0.5f, 0.8f));
-      FontManager.drawText(leftTop.getX + 5, leftTop.getY + 5,text, "font05_blue");
+      drawButtonBorder(selectedBorderColor);
+      drawText(selectedTextFont);
     } else {
-      FontManager.drawText(leftTop.getX + 5, leftTop.getY + 5,text, "font05");
+      drawText(textFont);
     }
   }
 
 
-  def drawButtonBorder(color: Color)  {
+ private def drawText(font: String) {
+   FontManager.drawText(leftTop.getX + 5, leftTop.getY + 5,text, font);
+ }
+
+ private def drawButtonBorder(color: Color)  {
     import color._
 
     glColor3f(red, green, blue);
@@ -54,7 +63,7 @@ class TextRectButton(val text: String, val rect: Rect, val action: ()=>Unit ) ex
     glEnable(GL_TEXTURE_2D);
   }
 
-  def drawButtonBody(color: Color) {
+ private def drawButtonBody(color: Color) {
     import color._
     glColor3f(red, green, blue);
 
@@ -77,6 +86,16 @@ class TextRectButton(val text: String, val rect: Rect, val action: ()=>Unit ) ex
   def mouseUp() {
 
   }
+
+  def getAnimDrawableSubstitute: AnimDrawableSubstitute = new AnimDrawableSubstitute {
+    def draw(offsetX: Float, offsetY: Float) {
+      glPushMatrix();
+      glTranslatef(offsetX,offsetY, 0);
+      drawButtonBody(bodyColor);
+      drawText(textFont);
+      glPopMatrix();
+    }
+  }
 }
 
 object Text2Rect {
@@ -91,3 +110,7 @@ object ConsoleCMD {
 
 class TextButton (override val text: String, val x: Int, val y: Int, cmd: String) extends TextRectButton(text, Text2Rect(x,y,text,"font05"), ConsoleCMD(cmd)) ;
 class TextActionButton(override val text: String, val x: Int, val y: Int, override val action: ()=>Unit ) extends TextRectButton(text, Text2Rect(x,y,text,"font05"),action);
+
+trait AnimDrawableSubstitute {
+  def draw(offsetX: Float, offsetY: Float);
+}

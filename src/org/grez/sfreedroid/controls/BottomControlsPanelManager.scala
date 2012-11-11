@@ -15,23 +15,68 @@ import org.grez.sfreedroid.DrawableEntitiesManager
  */
 
 class BottomControlsPanelManager {
-   def addControlsPanel () {
-    DrawableEntitiesManager.addEntity("Bottom_Panel", new SimpleRect(Rect((0,565),(1024,768)),Color(0f,0f,0f)),2);
-    DrawableEntitiesManager.addEntity("Togle_Grid_btn", new TextButton("toggle grid", 40,635, "toggle grid"),3);
-    DrawableEntitiesManager.addEntity("Togle_FPS_btn", new TextButton("toggle fps", 40,685, "toggle fps"),3);
-    DrawableEntitiesManager.addEntity("Togle_MousePos_btn", new TextButton("toggle mousepos", 40,735, "toggle mousepos"),3);
-    DrawableEntitiesManager.addEntity("Hide_Toolbar_btn" , new TextActionButton("^",500,540,hideToolbarAction), 3);
+  val bottom_panel = new SimpleRect(Rect((0, 565), (1024, 775)), Color(0f, 0f, 0f));
+  val toggleGridBtn = new TextButton("toggle grid", 40, 635, "toggle grid");
+  val toggleFpsBtn = new TextButton("toggle fps", 40, 685, "toggle fps");
+  val toggleMouseBtn = new TextButton("toggle mousepos", 40, 735, "toggle mousepos");
+  val hideToolbarBtn = new TextActionButton("^", 500, 540, hideToolbarAction);
+
+  val animList: List[AnimDrawableSubstitute] = List(bottom_panel, toggleGridBtn.getAnimDrawableSubstitute,
+    toggleFpsBtn.getAnimDrawableSubstitute, toggleMouseBtn.getAnimDrawableSubstitute, hideToolbarBtn.getAnimDrawableSubstitute);
+
+  def addControlsPanel() {
+    DrawableEntitiesManager.deleteEntries("Bottom_Panel", "Hide_Toolbar_btn");
+    DrawableEntitiesManager.addEntity("BP_show_Anim", new ControlPanelHideAnimation(false, animList, (() => {
+      DrawableEntitiesManager.deleteEntries("BP_show_Anim");
+      DrawableEntitiesManager.addEntity("Bottom_Panel", bottom_panel, 2);
+      DrawableEntitiesManager.addEntity("Togle_Grid_btn", toggleGridBtn, 3);
+      DrawableEntitiesManager.addEntity("Togle_FPS_btn", toggleFpsBtn, 3);
+      DrawableEntitiesManager.addEntity("Togle_MousePos_btn", toggleMouseBtn, 3);
+      DrawableEntitiesManager.addEntity("Hide_Toolbar_btn", hideToolbarBtn, 3);
+    })), 2)
   }
 
-  val hideToolbarAction: () => Unit = (()=> {
+  lazy val hideToolbarAction: () => Unit = (() => {
     DrawableEntitiesManager.deleteEntries("Bottom_Panel", "Togle_Grid_btn", "Togle_FPS_btn", "Togle_MousePos_btn", "Hide_Toolbar_btn");
-    DrawableEntitiesManager.addEntity("Bottom_Panel", new SimpleRect(Rect((0,760),(1024,768)),Color(0f,0f,0f)),2);
-    DrawableEntitiesManager.addEntity("Hide_Toolbar_btn" , new TextActionButton("^",500,740,(() => addControlsPanel())), 3);
+    DrawableEntitiesManager.addEntity("BP_hide_Anim", new ControlPanelHideAnimation(true, animList, (() => {
+      DrawableEntitiesManager.deleteEntry("BP_hide_Anim");
+      DrawableEntitiesManager.addEntity("Bottom_Panel", new SimpleRect(Rect((0, 760), (1024, 768)), Color(0f, 0f, 0f)), 2);
+      DrawableEntitiesManager.addEntity("Hide_Toolbar_btn", new TextActionButton("^", 500, 740, (() => addControlsPanel())), 3);
+    })), 2)
+
   })
+
+}
+
+class ControlPanelHideAnimation(val direction: Boolean, val entities: List[AnimDrawableSubstitute], val callBack: () => Unit) extends Drawable {
+  private val MAX_Y_OFFSET = 760 - 565;
+  private var stop = false;
+
+  def toBottom = direction;
+  //true means we start from top and go to bottom, false - otherwise.
+
+  private var stage = if (toBottom) 0 else MAX_Y_OFFSET;
+  private val step = if (toBottom) 10 else -10;
+  private val checkLbd: (Int) => Boolean = if (toBottom) ((i: Int) => i >= MAX_Y_OFFSET) else ((i: Int) => i <= 0)
+
+  def draw() {
+    d();
+
+    if (checkLbd(stage) && !stop) {
+      callBack();
+      stop = true;
+    } else {
+      stage += step;
+    }
+  }
+
+  def d() {
+    entities.foreach(entity => entity.draw(0, stage))
+  }
 }
 
 
-class SimpleRect(val rect: Rect, color: Color) extends  Drawable{
+class SimpleRect(val rect: Rect, color: Color) extends Drawable with AnimDrawableSubstitute {
 
   def draw() {
     import color._
@@ -48,6 +93,13 @@ class SimpleRect(val rect: Rect, color: Color) extends  Drawable{
     glVertex2i(leftBottom.getX, leftBottom.getY);
     glEnd();
     glEnable(GL_TEXTURE_2D);
+  }
+
+  def draw(offsetX: Float, offsetY: Float) {
+    glPushMatrix();
+    glTranslatef(offsetX, offsetY, 0);
+    draw();
+    glPopMatrix();
   }
 }
 

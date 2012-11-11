@@ -5,7 +5,8 @@ import org.grez.sfreedroid.{utils, MapManager}
 import utils.MouseGridHelper
 import utils.NumberUtils._
 import org.grez.sfreedroid.MapDefaults._
-import org.grez.sfreedroid.controls.OnMousePosUpdate
+import org.grez.sfreedroid.controls.{Control, OnMousePosUpdate}
+import org.grez.sfreedroid.textures.Rect
 
 /**
  * Created with IntelliJ IDEA.
@@ -56,6 +57,14 @@ class MapDrawable extends Drawable with OnMousePosUpdate {
   lazy val getGridDrawable = new MapGridDrawable(mouseHelper);
   lazy val getGridDebugDrawable = new MouseGridDebugDrawable(mouseHelper);
   lazy val getMousePosDrawable = new MousePosDrawable(mouseHelper)
+
+/*  def mouseDown() {}
+
+  def mouseUp() {}
+
+  val rect = Rect((0,0),(1024,768))*/
+
+
 }
 
 private[drawable] class MapGridDrawable(val mouseHelper: MouseGridHelper) extends Drawable {
