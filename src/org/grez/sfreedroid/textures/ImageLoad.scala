@@ -4,7 +4,7 @@ import com.twl.PNGDecoder
 import javax.imageio.ImageIO
 import java.nio.{ByteOrder, ByteBuffer}
 import java.awt.color.ColorSpace
-import java.awt.{Transparency, Color, Graphics}
+import java.awt.{Transparency, Color => AwtColor, Graphics}
 import java.awt.image._
 import java.util.Hashtable
 import java.io.{FileInputStream, InputStream, File => JFile}
@@ -45,7 +45,7 @@ object ImageLoad {
     val imgConvertedParams = convertImgBuf(bufferedImage, hw);
     val texImage = imgConvertedParams._1;
     val g: Graphics = texImage.getGraphics();
-    g.setColor(new Color(0f, 0f, 0f, 0f));
+    g.setColor(new AwtColor(0f, 0f, 0f, 0f));
     g.fillRect(0, 0, hw._2, hw._1);
     g.drawImage(bufferedImage, 0, 0, null);
     val data: Array[Byte] = (texImage.getRaster.getDataBuffer.asInstanceOf[DataBufferByte]).getData();
