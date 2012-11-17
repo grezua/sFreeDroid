@@ -1,6 +1,7 @@
 package org.grez.sfreedroid
 
 import collection.immutable.HashMap
+import console.DefaultConsole
 import controls.{OnMousePosUpdate, Control}
 import drawable.{TextDrawable, Drawable}
 
@@ -29,7 +30,10 @@ object DrawableEntitiesManager {
     val sortedPrimaryList = entities.toList.sortBy(_._2._1); //.unzip._2
     sortedList = sortedPrimaryList.unzip._2.unzip._2;
 
-    sortedControlsList = sortedPrimaryList.filter(_._2._2.isInstanceOf[Control]).map(a => (a._1, a._2._2.asInstanceOf[Control]))
+    sortedControlsList = sortedPrimaryList.filter(_._2._2.isInstanceOf[Control]).map(a => (a._1, a._2._2.asInstanceOf[Control])).reverse
+
+/*    DefaultConsole.log("sortedList =" +sortedList);
+    DefaultConsole.log("sortedControls =" +sortedControlsList);*/
   }
 
 

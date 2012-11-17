@@ -1,10 +1,9 @@
 package org.grez.sfreedroid.controls
 
 import org.grez.sfreedroid.textures.{Color, Rect}
-import org.grez.sfreedroid.drawable.Drawable
+import org.grez.sfreedroid.drawable.{AnimBasic, AnimDrawableSubstitute, Drawable}
 import org.lwjgl.opengl.GL11._
 import org.grez.sfreedroid.DrawableEntitiesManager
-
 
 /**
  * Created with IntelliJ IDEA.
@@ -48,35 +47,58 @@ class BottomControlsPanelManager {
 
 }
 
-class ControlPanelHideAnimation(val direction: Boolean, val entities: List[AnimDrawableSubstitute], val callBack: () => Unit) extends Drawable {
+
+
+class ControlPanelHideAnimation(val direction: Boolean, val entities: List[AnimDrawableSubstitute], override val callBack: () => Unit) extends AnimBasic {
   private val MAX_Y_OFFSET = 760 - 565;
-  private var stop = false;
 
   def toBottom = direction;
-  //true means we start from top and go to bottom, false - otherwise.
 
-  private var stage = if (toBottom) 0 else MAX_Y_OFFSET;
-  private val step = if (toBottom) 10 else -10;
-  private val checkLbd: (Int) => Boolean = if (toBottom) ((i: Int) => i >= MAX_Y_OFFSET) else ((i: Int) => i <= 0)
+  override var stage = if (toBottom) 0 else MAX_Y_OFFSET;
+  override val step = if (toBottom) 10 else -10;
+  override val checkLbd: (Int) => Boolean = if (toBottom) ((i: Int) => i >= MAX_Y_OFFSET) else ((i: Int) => i <= 0)
 
-  def draw() {
-    d();
-
-    if (checkLbd(stage) && !stop) {
-      callBack();
-      stop = true;
-    } else {
-      stage += step;
-    }
-  }
-
-  def d() {
+  def drw() {
     entities.foreach(entity => entity.draw(0, stage))
   }
 }
 
 
-class SimpleRect(val rect: Rect, color: Color) extends Drawable with AnimDrawableSubstitute {
+class ClickAnim(val x: Int, val y: Int, val color: Color, override val callBack: () => Unit) extends AnimBasic {
+
+  private val MAX_STEP = 50;
+  override var stage = 0;
+  override val step = 1;
+
+  override val checkLbd: (Int) => Boolean =  ((i: Int) => i >= MAX_STEP);
+
+
+  def drw() {
+    import color._
+
+    glShadeModel(GL_FLAT);
+    glDisable(GL_TEXTURE_2D);
+    glColor3f(red, green, blue);
+
+    glPushMatrix();
+    glTranslatef(x,y,0.0f)
+    glRotatef(stage  * 5, 0.0f,0.0f,1.0f);
+
+    glBegin(GL_LINES);
+     glVertex2i(-10,10);
+     glVertex2i(+10,-10);
+
+     glVertex2i(-10,-10);
+     glVertex2i(+10,+10);
+
+    glEnd();
+    glPopMatrix();
+    glEnable(GL_TEXTURE_2D);
+  }
+
+}
+
+class SimpleRect(override val rect: Rect, color: Color) extends Control with Drawable with AnimDrawableSubstitute {
 
   def draw() {
     import color._
@@ -101,5 +123,21 @@ class SimpleRect(val rect: Rect, color: Color) extends Drawable with AnimDrawabl
     draw();
     glPopMatrix();
   }
+
+  private var mouseX: Int = 0;
+  private var mouseY: Int = 0;
+
+  override def checkMouseOn(x: Int, y: Int) = {
+      mouseX = x;
+      mouseY = y;
+     super.checkMouseOn(x, y)
+  }
+
+
+  def mouseDown() {
+    DrawableEntitiesManager.addEntity("Click_Anim", new ClickAnim(mouseX,mouseY,Color(0.8f,0.2f,0.0f),(() => DrawableEntitiesManager.deleteEntry("Click_Anim"))),3);
+  }
+
+  def mouseUp() {}
 }
 

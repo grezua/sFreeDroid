@@ -1,6 +1,6 @@
 package org.grez.sfreedroid.controls
 
-import org.grez.sfreedroid.drawable.Drawable
+import org.grez.sfreedroid.drawable.{AnimDrawableSubstitute, Drawable}
 import org.lwjgl.opengl.GL11._
 import org.grez.sfreedroid.textures.{Color, Rect}
 import org.grez.sfreedroid.font.FontManager
@@ -111,6 +111,5 @@ object ConsoleCMD {
 class TextButton (override val text: String, val x: Int, val y: Int, cmd: String) extends TextRectButton(text, Text2Rect(x,y,text,"font05"), ConsoleCMD(cmd)) ;
 class TextActionButton(override val text: String, val x: Int, val y: Int, override val action: ()=>Unit ) extends TextRectButton(text, Text2Rect(x,y,text,"font05"),action);
 
-trait AnimDrawableSubstitute {
-  def draw(offsetX: Float, offsetY: Float);
-}
+
+
