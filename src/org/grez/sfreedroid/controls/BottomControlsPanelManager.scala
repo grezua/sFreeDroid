@@ -3,7 +3,7 @@ package org.grez.sfreedroid.controls
 import org.grez.sfreedroid.textures.{Color, Rect}
 import org.grez.sfreedroid.drawable.{AnimBasic, AnimDrawableSubstitute, Drawable}
 import org.lwjgl.opengl.GL11._
-import org.grez.sfreedroid.DrawableEntitiesManager
+import org.grez.sfreedroid.{DrawableEntity, DrawableEntitiesManager}
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,21 +24,22 @@ class BottomControlsPanelManager {
     toggleFpsBtn.getAnimDrawableSubstitute, toggleMouseBtn.getAnimDrawableSubstitute, hideToolbarBtn.getAnimDrawableSubstitute);
 
   def addControlsPanel() {
-    DrawableEntitiesManager.deleteEntries("Bottom_Panel", "Hide_Toolbar_btn");
+    DrawableEntitiesManager.deleteEntities("Bottom_Panel", "Hide_Toolbar_btn");
     DrawableEntitiesManager.addEntity("BP_show_Anim", new ControlPanelHideAnimation(false, animList, (() => {
-      DrawableEntitiesManager.deleteEntries("BP_show_Anim");
-      DrawableEntitiesManager.addEntity("Bottom_Panel", bottom_panel, 2);
-      DrawableEntitiesManager.addEntity("Togle_Grid_btn", toggleGridBtn, 3);
-      DrawableEntitiesManager.addEntity("Togle_FPS_btn", toggleFpsBtn, 3);
-      DrawableEntitiesManager.addEntity("Togle_MousePos_btn", toggleMouseBtn, 3);
-      DrawableEntitiesManager.addEntity("Hide_Toolbar_btn", hideToolbarBtn, 3);
+      DrawableEntitiesManager.deleteEntity("BP_show_Anim");
+      DrawableEntitiesManager.addEntities(
+        DrawableEntity("Bottom_Panel", bottom_panel, 2),
+        DrawableEntity("Togle_Grid_btn", toggleGridBtn, 3),
+        DrawableEntity("Togle_FPS_btn", toggleFpsBtn, 3),
+        DrawableEntity("Togle_MousePos_btn", toggleMouseBtn, 3),
+        DrawableEntity("Hide_Toolbar_btn", hideToolbarBtn, 3));
     })), 2)
   }
 
   lazy val hideToolbarAction: () => Unit = (() => {
-    DrawableEntitiesManager.deleteEntries("Bottom_Panel", "Togle_Grid_btn", "Togle_FPS_btn", "Togle_MousePos_btn", "Hide_Toolbar_btn");
+    DrawableEntitiesManager.deleteEntities("Bottom_Panel", "Togle_Grid_btn", "Togle_FPS_btn", "Togle_MousePos_btn", "Hide_Toolbar_btn");
     DrawableEntitiesManager.addEntity("BP_hide_Anim", new ControlPanelHideAnimation(true, animList, (() => {
-      DrawableEntitiesManager.deleteEntry("BP_hide_Anim");
+      DrawableEntitiesManager.deleteEntity("BP_hide_Anim");
       DrawableEntitiesManager.addEntity("Bottom_Panel", new SimpleRect(Rect((0, 760), (1024, 768)), Color(0f, 0f, 0f)), 2);
       DrawableEntitiesManager.addEntity("Hide_Toolbar_btn", new TextActionButton("^", 500, 740, (() => addControlsPanel())), 3);
     })), 2)
@@ -135,7 +136,7 @@ class SimpleRect(override val rect: Rect, color: Color) extends Control with Dra
 
 
   def mouseDown() {
-    DrawableEntitiesManager.addEntity("Click_Anim", new ClickAnim(mouseX,mouseY,Color(0.8f,0.2f,0.0f),(() => DrawableEntitiesManager.deleteEntry("Click_Anim"))),3);
+    DrawableEntitiesManager.addEntity("Click_Anim", new ClickAnim(mouseX,mouseY,Color(0.8f,0.2f,0.0f),(() => DrawableEntitiesManager.deleteEntity("Click_Anim"))),3);
   }
 
   def mouseUp() {}

@@ -34,25 +34,25 @@ object ToggleCMD extends ConsoleCmd("toggle", CmdParamsList(CmdParam("value", CP
     params.get(0) match {
       case s: String if s == GRID => {
         if (DrawableEntitiesManager.isEntityPresent(GRID)) {
-          DrawableEntitiesManager.deleteEntry(GRID);
+          DrawableEntitiesManager.deleteEntity(GRID);
         } else {
           DrawableEntitiesManager.addEntity(GRID, GlobalDebugState.mapDrawable.getGridDrawable, 1);
         }
       }
       case s: String if s == FPS => {
         if (DrawableEntitiesManager.isEntityPresent(FPS)) {
-          DrawableEntitiesManager.deleteEntry(FPS);
+          DrawableEntitiesManager.deleteEntity(FPS);
           DrawableEntitiesManager.addEntity(FPSHISTOGRAMM, GlobalDebugState.fpsMeter.getHistogramDrawable(800,220),2);
         } else if (DrawableEntitiesManager.isEntityPresent(FPSHISTOGRAMM)) {
-          DrawableEntitiesManager.deleteEntry(FPSHISTOGRAMM);
+          DrawableEntitiesManager.deleteEntity(FPSHISTOGRAMM);
         } else {
           DrawableEntitiesManager.addEntity(FPS, GlobalDebugState.fpsMeter.getFPSDrawable(800,220),2);
         }
       } case s: String if s == MOUSEPOS => {
           if (DrawableEntitiesManager.isEntityPresent(DBGMOUSEPOS)){ //cycle through 3 states: simple mouse pos, debug mouse pos, and none
-            DrawableEntitiesManager.deleteEntry(DBGMOUSEPOS);
+            DrawableEntitiesManager.deleteEntity(DBGMOUSEPOS);
           } else if (DrawableEntitiesManager.isEntityPresent(MOUSEPOS)){
-            DrawableEntitiesManager.deleteEntry(MOUSEPOS);
+            DrawableEntitiesManager.deleteEntity(MOUSEPOS);
             DrawableEntitiesManager.addEntity(DBGMOUSEPOS, GlobalDebugState.mapDrawable.getGridDebugDrawable,2);
           } else {
             DrawableEntitiesManager.addEntity(MOUSEPOS, GlobalDebugState.mapDrawable.getMousePosDrawable,2);
@@ -149,7 +149,7 @@ object DeleteDrawable extends ConsoleCmd("rementity", CmdParamsList(CmdParam("na
       };
     };
 
-    DrawableEntitiesManager.deleteEntry(entName);
+    DrawableEntitiesManager.deleteEntity(entName);
     console.logFromCommand("-" + entName);
   }
 

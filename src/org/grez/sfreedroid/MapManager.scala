@@ -117,20 +117,6 @@ object MapManager {
 
   }*/
 
-  def drawRect (r: Rect) {
-     glVertex2i(r.leftTop.getX, r.leftTop.getY);
-    glVertex2i(r.rightTop.getX, r.rightTop.getY);
-
-    glVertex2i(r.rightTop.getX, r.rightTop.getY);
-    glVertex2i(r.rightBottom.getX, r.rightBottom.getY);
-
-    glVertex2i(r.rightBottom.getX, r.rightBottom.getY);
-    glVertex2i(r.leftBottom.getX, r.leftBottom.getY);
-
-    glVertex2i(r.leftBottom.getX, r.leftBottom.getY);
-    glVertex2i(r.leftTop.getX, r.leftTop.getY);
-  }
-
   def drawGrid(selectedX: Int, selectedY: Int, flatX:Int, flatY:Int) {
     glDisable(GL_TEXTURE_2D)
     glColor3f(1.0f, 0f, 1.0f);
@@ -166,10 +152,9 @@ object MapManager {
     }
 
     glColor3f(1.0f, 1.0f, 0.0f);
-    drawRect(getMapRect(flatX, flatY));
+    getMapRect(flatX, flatY).directDrw();
     glColor3f(1f,1f,1f);
-    val tileRect = getTileRect(selectedX, selectedY);
-    drawRect(tileRect);
+    getTileRect(selectedX, selectedY).directDrw();
 
     glEnd();
     glFlush();
@@ -184,4 +169,11 @@ object MapManager {
     for {k <- 0 until SIZE_X; j <- 0 until SIZE_Y} r(k)(j) = Random.nextInt(NUM_OF_IDS);
     r;
   };
+
+
+  private val cr = Rect((0,0), (SIZE_X - 1,SIZE_Y - 1));
+
+  def coorsWithinMap(x: Int, y: Int): Boolean = {
+     cr.isCordsWithin(x,y);
+  }
 }

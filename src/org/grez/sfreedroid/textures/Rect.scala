@@ -1,6 +1,7 @@
 package org.grez.sfreedroid.textures
 
 import org.lwjgl.util.Point
+import org.lwjgl.opengl.GL11._
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,10 +29,24 @@ object Rect {
 case class Rect (leftTop:Point, rightTop:Point, rightBottom:Point, leftBottom:Point){
 
   def isCordsWithin(x: Int, y: Int): Boolean = {
-    x>leftTop.getX && x<rightBottom.getX && y > leftTop.getY && y < rightBottom.getY
+    x>=leftTop.getX && x<=rightBottom.getX && y >= leftTop.getY && y <= rightBottom.getY
   }
 
   private def pointToString(p:Point) = "{x="+p.getX+",y="+p.getY+"}"
 
   override def toString = "lt"+pointToString(leftTop)+" rt"+pointToString(rightTop)+"rb"+pointToString(rightBottom)+"lb"+pointToString(leftBottom);
+
+  def directDrw() {
+        glVertex2i(leftTop.getX,     leftTop.getY);
+        glVertex2i(rightTop.getX,    rightTop.getY);
+
+        glVertex2i(rightTop.getX,    rightTop.getY);
+        glVertex2i(rightBottom.getX, rightBottom.getY);
+
+        glVertex2i(rightBottom.getX, rightBottom.getY);
+        glVertex2i(leftBottom.getX,  leftBottom.getY);
+
+        glVertex2i(leftBottom.getX,  leftBottom.getY);
+        glVertex2i(leftTop.getX,     leftTop.getY);
+  }
 }

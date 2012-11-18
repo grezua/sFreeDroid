@@ -12,8 +12,12 @@ import org.grez.sfreedroid.drawable.MapDrawable
  */
 
 object GlobalDebugState {
+  type cordX = Int;
+  type cordY = Int;
 
   lazy val fpsMeter =  new FPSMeter;
   lazy val mapDrawable = new MapDrawable();
+
+  var selectedMapTile: Option[(cordX, cordY)] = None;
 
 }

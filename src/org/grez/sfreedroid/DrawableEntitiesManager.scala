@@ -13,6 +13,8 @@ import drawable.{TextDrawable, Drawable}
  * Time: 9:04 PM
  * To change this template use File | Settings | File Templates.
  */
+case class DrawableEntity(name: String, entity: Drawable, layer: Int = 0 );
+
 object DrawableEntitiesManager {
 
   private var entities: Map[String, (Int, Drawable)] = HashMap();
@@ -20,7 +22,6 @@ object DrawableEntitiesManager {
 
   private var mouseableEntities: Map[String, OnMousePosUpdate] = HashMap();
 
-  private var controls: Map[String, Control] = HashMap();
   private var sortedControlsList: List[(String, Control)] = List();
 
   private var selectedControl: Option[(String, Control)] = None;
@@ -64,45 +65,52 @@ object DrawableEntitiesManager {
     val changedControl = sortedControlsList.find(_._2.checkMouseOn(x,chY) );
     setCurrentControl(changedControl);
 
-
-    /* if (selectedControl.isDefined){
-      selectedControl.get._2.updateMousePos(x,y);
-
-      if (!selectedControl.get._2.isMouseOn){
-        selectedControl = sortedControlsList.find(p =>  {p._2.updateMousePos(x,y); p._2.isMouseOn})
-      }
-    } else {
-        selectedControl = controls.find(p =>  {p._2.updateMousePos(x,y); p._2.isMouseOn})
-    }*/
   }
 
   def drawAll() {
     sortedList.foreach(_.draw());
   }
 
-  def addEntity(name: String, entity: Drawable, layer: Int = 0) {
-    entities += ((name, (layer, entity)));
+  def addEntities(xs: DrawableEntity*) {
+    xs.foreach(s => _addEntity(s.name,s.entity,s.layer));
     updSortedList();
-
-    entity match {
-      case c: Control => controls += ((name, c));
-      case m: OnMousePosUpdate => mouseableEntities += ((name, m));
-      case _ => ();
-    }
-
   }
 
-  def deleteEntries(xs: String*) {
-    xs.foreach(deleteEntry(_));
+  def addEntity(drawableEntity: DrawableEntity){
+    _addEntity(drawableEntity.name,drawableEntity.entity,drawableEntity.layer);
+    updSortedList();
   }
 
-  def deleteEntry(name: String) {
-    controls -= name;
+  def addEntity(name: String, entity: Drawable, layer: Int = 0) {
+    _addEntity(name,entity,layer)
+    updSortedList();
+  }
+
+  private def _addEntity(name: String, entity: Drawable, layer: Int) {
+    entities += ((name, (layer, entity)));
+
+        entity match {
+          case m: OnMousePosUpdate => mouseableEntities += ((name, m));
+          case _ => ();
+        }
+  }
+
+  def deleteEntities(xs: String*) {
+    xs.foreach(_deleteEntity(_));
+    updSortedList();
+  }
+
+  //for sorting operations optimizations.
+  private def _deleteEntity(name: String){
     mouseableEntities -= name;
-    entities -= name;
-    if (selectedControl.isDefined && selectedControl.get._1 == name) {
-      setCurrentControl(None);
-    }
+        entities -= name;
+        if (selectedControl.isDefined && selectedControl.get._1 == name) {
+          setCurrentControl(None);
+      }
+  }
+
+  def deleteEntity(name: String) {
+    _deleteEntity(name);
     updSortedList();
   }
 
