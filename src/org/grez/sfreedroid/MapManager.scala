@@ -20,12 +20,15 @@ import utils.{NumberUtils, FileUtils}
 object MapDefaults {
   val SIZE_X = 9;
   val SIZE_Y = 18;
-  val NUM_OF_IDS = 40;
+  val NUM_OF_IDS = 52;
   val DEF_WIDTH = 134;
   val DEF_HEIGHT = 66;
 
   val HALF_DEF_WIDTH =  DEF_WIDTH / 2;
   val HALF_DEF_HEIGHT =  DEF_HEIGHT / 2;
+
+  val TILE_OFFSETS_FILE =  "./graphics/offset_file.txt";
+  val MAP_FILE =  "./graphics/map_file.txt";
 
 }
 
@@ -88,87 +91,10 @@ object MapManager {
     genList(base, 24) ::: genList(base1, 23) ::: genList(base2, 6);
   }
 
-  def getMapRect(x: Int, y: Int): Rect = {
-    val pt = (zx: Int, zy: Int) => new Point(zx, zy);
-    val lx = x * DEF_WIDTH;
-    val rx = lx + DEF_WIDTH;
-    val ty = y * DEF_HEIGHT;
-    val by = ty + DEF_HEIGHT;
-    Rect(leftTop = pt(lx, ty), rightTop = pt(rx, ty), rightBottom = pt(rx, by), leftBottom = pt(lx, by));
-  }
 
-  def getTileRect(x: Int, y: Int): Rect = {
-    import NumberUtils.isOdd;
-    val pt = (zx: Int, zy: Int) => new Point(zx, zy);
+  lazy val mapa: Array[Array[Int]] = FileUtils.loadMapFromFile(MAP_FILE); //Array.fill(SIZE_X, SIZE_Y) {Random.nextInt(NUM_OF_IDS)};
 
-
-    val lx = (x * DEF_WIDTH) -  {if (!isOdd(y)) HALF_DEF_WIDTH else 0};
-    val mx = (lx + HALF_DEF_WIDTH)
-    val rx = (lx + DEF_WIDTH)
-    val ty = (y * HALF_DEF_HEIGHT) - HALF_DEF_HEIGHT
-    val my = (ty + HALF_DEF_HEIGHT)
-    val by = (ty + DEF_HEIGHT)
-
-
-    Rect(leftTop = pt(lx, my), rightTop = pt(mx, ty), rightBottom = pt(rx, my), leftBottom = pt(mx, by));
-  }
-
-  /*def drawSelectedMapCell(selectedX: Int, selectedY: Int){
-
-  }*/
-
-  def drawGrid(selectedX: Int, selectedY: Int, flatX:Int, flatY:Int) {
-    glDisable(GL_TEXTURE_2D)
-    glColor3f(1.0f, 0f, 1.0f);
-    glShadeModel(GL_FLAT);
-    glBegin(GL_LINES);
-    for (i <- 0 to SIZE_X) {
-      val curX = i * DEF_WIDTH;
-      glVertex2i(curX, 0);
-      glVertex2i(curX, 768);
-    }
-    for (j <- 0 to SIZE_Y) {
-      val curY = j * DEF_HEIGHT;
-      glVertex2i(0, curY);
-      glVertex2i(1024, curY);
-    }
-
-    glColor3f(0.0f, 0.0f, 0.0f);
-
-    val outScreenX = SIZE_X*DEF_WIDTH;
-
-    for (i <- 0 to SIZE_X + 10) {
-      val curY =  (i * DEF_HEIGHT + HALF_DEF_HEIGHT) ;
-      val curX = (outScreenX)- ( i * DEF_WIDTH + HALF_DEF_WIDTH);
-      glVertex2i(curX, 0);
-      glVertex2i(outScreenX, curY);
-    }
-
-    for (j <- 0 to SIZE_Y) {
-      val curY = j * DEF_HEIGHT + HALF_DEF_HEIGHT ;
-      val curX = j * DEF_WIDTH + HALF_DEF_WIDTH;
-      glVertex2i(0, curY);
-      glVertex2i(curX, 0);
-    }
-
-    glColor3f(1.0f, 1.0f, 0.0f);
-    getMapRect(flatX, flatY).directDrw();
-    glColor3f(1f,1f,1f);
-    getTileRect(selectedX, selectedY).directDrw();
-
-    glEnd();
-    glFlush();
-    glEnable(GL_TEXTURE_2D)
-
-  //  FontManager.drawText(tileRect.leftTop.getX, tileRect.leftBottom.getY+30,tileRect.toString, "redfont");
-
-  }
-
-  lazy val mapa: Array[Array[Int]] = {
-    val r: Array[Array[Int]] = Array.ofDim(SIZE_X, SIZE_Y);
-    for {k <- 0 until SIZE_X; j <- 0 until SIZE_Y} r(k)(j) = Random.nextInt(NUM_OF_IDS);
-    r;
-  };
+  lazy val tileOffsets: Array[Option[(Int,Int)]] = FileUtils.loadOffsetsFromFile(TILE_OFFSETS_FILE);
 
 
   private val cr = Rect((0,0), (SIZE_X - 1,SIZE_Y - 1));

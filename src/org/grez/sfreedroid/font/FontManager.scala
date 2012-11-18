@@ -89,6 +89,7 @@ private[font] object defaultFontConfig {
 }
 
 object FontManager {
+  val RED_FONT = "redfont";
 
   private lazy val allFonts: Map[String,FontConfig] = defaultFontConfig.defaultMapping;
 

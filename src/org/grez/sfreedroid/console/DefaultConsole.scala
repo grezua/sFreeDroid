@@ -3,8 +3,9 @@ package org.grez.sfreedroid.console
 import org.grez.sfreedroid.debug.GlobalDebugState
 import CmdParamType._
 import org.grez.sfreedroid.font.FontManager
-import org.grez.sfreedroid.DrawableEntitiesManager
+import org.grez.sfreedroid.{MapDefaults, MapManager, DrawableEntitiesManager}
 import scala.Some
+import org.grez.sfreedroid.utils.FileUtils
 
 /* Console command Implementations!  */
 
@@ -152,10 +153,85 @@ object DeleteDrawable extends ConsoleCmd("rementity", CmdParamsList(CmdParam("na
     DrawableEntitiesManager.deleteEntity(entName);
     console.logFromCommand("-" + entName);
   }
+}
 
+object NextMapTile extends ConsoleCmd ("nexttile", None) {
+  def getHelp = "cycle through flor tiles for selected map pos"
+
+  def execute(params: Option[List[Any]], console: Console) {
+    val selected = GlobalDebugState.selectedMapTile
+    if (selected.isDefined){
+      val (x,y) = selected.get;
+      import MapManager._;
+      if (mapa(x)(y) >= MapDefaults.NUM_OF_IDS) mapa(x)(y) = 0 else mapa(x)(y) +=1;
+      console.log("set id= "+mapa(x)(y))
+    } else {
+      console.log("tile is not selected")
+    }
+  }
+}
+
+object PreviousMapTile extends ConsoleCmd ("prevtile", None) {
+  def getHelp = "cycle backwards through flor tiles for selected map pos"
+
+    def execute(params: Option[List[Any]], console: Console) {
+      val selected = GlobalDebugState.selectedMapTile
+      if (selected.isDefined){
+        val (x,y) = selected.get;
+        import MapManager._;
+        if (mapa(x)(y) <= 0) mapa(x)(y) = MapDefaults.NUM_OF_IDS-1 else mapa(x)(y) -=1;
+        console.log("set id= "+mapa(x)(y))
+      } else {
+        console.log("tile is not selected")
+      }
+    }
+}
+
+object SetMapTile extends ConsoleCmd ("settile", CmdParamsList(CmdParam("val", CmdParamType.CPTInt, "tile index to set"))) {
+  def getHelp = "cycle backwards through flor tiles for selected map pos"
+
+  def execute(params: Option[List[Any]], console: Console) {
+    val id = params.get(0) match {
+      case i: Int if i >= 0 && i <= MapDefaults.NUM_OF_IDS => i;
+      case i: Int => {
+        console.log("invalid tile index, max allowed tile indexes: " + MapDefaults.NUM_OF_IDS);
+        return;
+      }
+      case _ => {
+        console.logFromCommand("invalid cmd");
+        return;
+      }
+    }
+    val selected = GlobalDebugState.selectedMapTile
+    if (selected.isDefined) {
+      val (x, y) = selected.get;
+      import MapManager._;
+      mapa(x)(y) = id;
+      console.log("set id= " + mapa(x)(y))
+    } else {
+      console.log("tile is not selected")
+    }
+  }
+}
+
+object SaveTileOffsets extends ConsoleCmd ("saveoffsets", None) {
+  def getHelp = "saves edited offsets to a file"
+
+    def execute(params: Option[List[Any]], console: Console) {
+        FileUtils.saveOffsetsToFile(MapDefaults.TILE_OFFSETS_FILE,MapManager.tileOffsets);
+    }
+}
+
+object SaveMap extends ConsoleCmd ("savemap", None) {
+  def getHelp = "saves map to a file"
+
+    def execute(params: Option[List[Any]], console: Console) {
+        FileUtils.saveMapToFile(MapDefaults.MAP_FILE,MapManager.mapa);
+    }
 }
 
 
 /*Default console impl*/
 object DefaultConsole extends Console(200, 1000, List(GreetCMD, ToggleCMD, PrintCMDHistoryCMD, QuitCMD,
-  SetConsoleLogFontCMD, ListAllFontsCMD, ListAllDrawables, DeleteDrawable));
+  SetConsoleLogFontCMD, ListAllFontsCMD, ListAllDrawables, DeleteDrawable, NextMapTile, PreviousMapTile,
+  SetMapTile,SaveTileOffsets, SaveMap));

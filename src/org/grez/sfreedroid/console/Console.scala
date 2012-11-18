@@ -368,7 +368,7 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd]) e
   }
 
   private def drawCmd() {
-     FontManager.drawText(2,height-FONT_HEG,cmd+'_', "redfont" );
+     FontManager.drawText(2,height-FONT_HEG,cmd+'_', FontManager.RED_FONT);
   }
 }
 

@@ -15,6 +15,13 @@ import org.grez.sfreedroid.console.DefaultConsole
  * To change this template use File | Settings | File Templates.
  */
 
+class SmallTextRectButton(override val text: String, override val rect: Rect, override val action: ()=>Unit ) extends  TextRectButton(text,rect,action) {
+  override protected def drawText(font: String) {
+    import rect._
+    FontManager.drawText(leftTop.getX + 5, leftTop.getY - 4,text, font);
+  }
+}
+
 class TextRectButton(val text: String, override val rect: Rect, val action: ()=>Unit ) extends Control with Drawable {
   import rect._
 
@@ -36,11 +43,11 @@ class TextRectButton(val text: String, override val rect: Rect, val action: ()=>
   }
 
 
- private def drawText(font: String) {
+ protected def drawText(font: String) {
    FontManager.drawText(leftTop.getX + 5, leftTop.getY + 5,text, font);
  }
 
- private def drawButtonBorder(color: Color)  {
+  protected def drawButtonBorder(color: Color)  {
     import color._
 
     glColor3f(red, green, blue);
@@ -99,8 +106,8 @@ class TextRectButton(val text: String, override val rect: Rect, val action: ()=>
 }
 
 object Text2Rect {
-  def apply(x: Int, y: Int, text: String, font: String): Rect = {
-    Rect((x,y),(x+10+FontManager.getTextWidth(text,font), y+30))
+  def apply(x: Int, y: Int, text: String, font: String, height: Int = 30): Rect = {
+    Rect((x,y),(x+10+FontManager.getTextWidth(text,font), y+height))
   }
 }
 
@@ -108,8 +115,9 @@ object ConsoleCMD {
   def apply(cmd: String): () => Unit = (() => DefaultConsole.execute(cmd));
 }
 
-class TextButton (override val text: String, val x: Int, val y: Int, cmd: String) extends TextRectButton(text, Text2Rect(x,y,text,"font05"), ConsoleCMD(cmd)) ;
-class TextActionButton(override val text: String, val x: Int, val y: Int, override val action: ()=>Unit ) extends TextRectButton(text, Text2Rect(x,y,text,"font05"),action);
+class TextButton (override val text: String, val x: Int, val y: Int, cmd: String) extends TextRectButton(text, Text2Rect(x,y,text,"font05", 30), ConsoleCMD(cmd)) ;
+class TextActionButton(override val text: String, val x: Int, val y: Int, override val action: ()=>Unit) extends TextRectButton(text, Text2Rect(x,y,text,"font05", 30),action);
+class SmallTextActionButton(override val text: String, val x: Int, val y: Int, override val action: ()=>Unit) extends SmallTextRectButton(text, Text2Rect(x,y,text,"font05", 15),action);
 
 
 
