@@ -3,6 +3,7 @@ package org.grez.sfreedroid.utils
 ;
 import org.grez.sfreedroid.MapDefaults._
 import org.grez.sfreedroid.controls.OnMousePosUpdate
+import org.grez.sfreedroid.debug.GlobalDebugState
 ;
 
 /**
@@ -17,10 +18,11 @@ class MouseGridHelper extends OnMousePosUpdate {
 
   case class TriangleHelper(xt: Int, yt: Int, cxOffset: Int, cyOffset: Int);
 
+  var  translatedX: Int = 0;
+  var  translatedY: Int = 0;
 
   var flatCordMapX: Int = 0;
   var flatCordMapY: Int = 0;
-
 
   var localMX: Int = 0;
   var localMY: Int = 0;
@@ -35,11 +37,14 @@ class MouseGridHelper extends OnMousePosUpdate {
   override def updateMousePos(x: Int, y: Int) {
     super.updateMousePos(x, y);
 
-    flatCordMapX = mouseX / DEF_WIDTH;
-    flatCordMapY = mouseY / DEF_HEIGHT;
+    translatedX =  mouseX + GlobalDebugState.cursorMovementX.toInt;
+    translatedY = mouseY + GlobalDebugState.cursorMovementY.toInt;
 
-    localMX = mouseX % DEF_WIDTH;
-    localMY = mouseY % DEF_HEIGHT;
+    flatCordMapX = translatedX / DEF_WIDTH;
+    flatCordMapY = translatedY / DEF_HEIGHT;
+
+    localMX = translatedX % DEF_WIDTH;
+    localMY = translatedY % DEF_HEIGHT;
 
     transformed = transformCoords(localMX, localMY)
 

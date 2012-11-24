@@ -53,7 +53,7 @@ object FileUtils {
   }
 
   def loadMapFromFile(file:String, sizeX: Int, sizeY : Int): Array[Array[Int]] = {
-    val r: Array[Array[Int]] = Array.fill(sizeX, sizeY) {0};
+    val r: Array[Array[Int]] = Array.fill(sizeX, sizeY) {49};
     val src = Source.fromFile(file );
     val lines = src.getLines().toList;
     lines.foreach(l => {

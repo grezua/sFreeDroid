@@ -20,4 +20,7 @@ object GlobalDebugState {
 
   var selectedMapTile: Option[(cordX, cordY)] = None;
 
+  var cursorMovementX: Float = 0;
+  var cursorMovementY: Float = 0;
+
 }

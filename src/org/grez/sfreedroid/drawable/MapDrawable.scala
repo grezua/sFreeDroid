@@ -30,14 +30,27 @@ class MapDrawable extends Control with Drawable with OnMousePosUpdate {
    }
 
   def draw() {
+    import GlobalDebugState._;
+
+
+    val flatCursorX: Int = cursorMovementX.toInt / DEF_WIDTH;
+    val flatCursorY: Int = (cursorMovementY.toInt / DEF_HEIGHT);
+    val relativeY = flatCursorY*2;
+
+    if (relativeY >= SIZE_Y || flatCursorX >= SIZE_X) return; //no drawing if out of map.
+
+    val startY = relativeY;
+    val endY = if ((startY + 26) >SIZE_Y) SIZE_Y else startY + 26;
+    val startX=flatCursorX;
+    val endX = if ((startX + 10) >SIZE_X) SIZE_X else startX + 10;
+
     var curY = 0;
     var curX = 0;
 
-    //glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glPushMatrix();
+    glTranslatef(-cursorMovementX, -cursorMovementY, 0f);
     glColor4f(0f,0f,0f,1.0f)
-    for {y <-0 until SIZE_Y; x <-0 until SIZE_X  }{
+    for {y <-startY until endY; x <-startX until endX  }{
 
     if (isOdd(y)){
         curX = DEF_WIDTH * x;
@@ -52,9 +65,9 @@ class MapDrawable extends Control with Drawable with OnMousePosUpdate {
       draw(curX + ox,curY + oy,tileId)
 
     }
-    //glDisable(GL_BLEND);
-   // glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
     drawSelected();
+    glPopMatrix();
   }
 
   def drawSelected(){
@@ -104,6 +117,8 @@ private[drawable] class MapGridDrawable(val mouseHelper: MouseGridHelper) extend
   }
 
   def drawGrid(selectedX: Int, selectedY: Int, flatX:Int, flatY:Int) {
+    glPushMatrix();
+    glTranslatef( -GlobalDebugState.cursorMovementX, -GlobalDebugState.cursorMovementY, 0f);
        glDisable(GL_TEXTURE_2D)
        glColor3f(1.0f, 0f, 1.0f);
        glBegin(GL_LINES);
@@ -144,5 +159,6 @@ private[drawable] class MapGridDrawable(val mouseHelper: MouseGridHelper) extend
        glEnd();
        glFlush();
        glEnable(GL_TEXTURE_2D)
+       glPopMatrix();
      }
 }
