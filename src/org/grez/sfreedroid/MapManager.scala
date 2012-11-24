@@ -80,15 +80,15 @@ object MapManager {
 
 
 
-    def genList(base: String, To: Int): List[String] = {
-      (for {i <- 1 to To} yield base + addLeadingZeroes(i.toString)).toList;
+    def genList(base: String,  From: Int, To: Int): List[String] = {
+      (for {i <- From to To} yield base + addLeadingZeroes(i.toString)).toList;
     }
 
     val base = "./graphics/flor/iso_sidewalk_"; // "./graphics/flor/iso_carpet_tile_" ;
     val base1 = "./graphics/flor/iso_miscellaneous_floor_"
     val base2 = "./graphics/flor/iso_sand_floor_"
 
-    genList(base, 24) ::: genList(base1, 23) ::: genList(base2, 6);
+    genList(base, 0,24) ::: genList(base1, 0,23) ::: genList(base2, 1,6);
   }
 
 

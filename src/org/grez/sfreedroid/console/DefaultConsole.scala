@@ -179,7 +179,7 @@ object PreviousMapTile extends ConsoleCmd ("prevtile", None) {
       if (selected.isDefined){
         val (x,y) = selected.get;
         import MapManager._;
-        if (mapa(x)(y) <= 0) mapa(x)(y) = MapDefaults.NUM_OF_IDS-1 else mapa(x)(y) -=1;
+        if (mapa(x)(y) <= 0) mapa(x)(y) = MapDefaults.NUM_OF_IDS else mapa(x)(y) -=1;
         console.log("set id= "+mapa(x)(y))
       } else {
         console.log("tile is not selected")
