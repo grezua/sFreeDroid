@@ -76,14 +76,13 @@ class FPSMeter()  {
     glVertex2i(drawX+MAX_HIST_SIZE+4,drawY+MAX_HEG+3);
     glVertex2i(drawX,drawY+MAX_HEG+3);
     glEnd();
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   glPushAttrib(GL_COLOR_BUFFER_BIT);
+   glBlendFunc(GL_ONE,GL_ZERO);
 
-
-   glColor4f(1f,1f,0f,0.9f);
+   glColor4f(1f,1f,0f,1f);
    glBegin(GL_LINES)
     var i =3;
     for (j <- histData) {
-     //histData(i) = r.nextInt(MAX_HEG);
       glVertex2i(drawX+i,drawY+MAX_HEG+1);
       glVertex2i(drawX+i,drawY+MAX_HEG+1-j)
       i += 1;
@@ -91,6 +90,7 @@ class FPSMeter()  {
 
     glEnd();
     glEnable(GL_TEXTURE_2D);
+    glPopAttrib();
   }
 
 
