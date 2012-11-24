@@ -200,8 +200,7 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd]) e
     l(0).take(i);
   }
 
-  def execute(cmd: String) {
-    cmdHistory.putCMdToHistory(cmd);
+  def executeNoHistory(cmd: String) {
 
     val searchS = searchCmd(cmd);
     if (searchS.isEmpty) {
@@ -209,6 +208,12 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd]) e
     } else {
       executeCMD(searchS.get, cmd);
     }
+  }
+
+
+  def execute(cmd: String) {
+    cmdHistory.putCMdToHistory(cmd);
+    executeNoHistory(cmd);
   }
 
   private def logAllCmds(){

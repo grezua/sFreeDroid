@@ -110,7 +110,7 @@ object Text2Rect {
 }
 
 object ConsoleCMD {
-  def apply(cmd: String): () => Unit = (() => DefaultConsole.execute(cmd));
+  def apply(cmd: String): () => Unit = (() => DefaultConsole.executeNoHistory(cmd));
 }
 
 class TextButton (override val text: String, val x: Int, val y: Int, cmd: String) extends TextRectButton(text, Text2Rect(x,y,text,"font05", 30), ConsoleCMD(cmd)) ;

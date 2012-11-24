@@ -53,7 +53,10 @@ class BottomControlsPanelManager {
   val animList: List[AnimDrawableSubstitute] = List(bottom_panel, toggleGridBtn.getAnimDrawableSubstitute,
     toggleFpsBtn.getAnimDrawableSubstitute, toggleMouseBtn.getAnimDrawableSubstitute,
     nextTileBtn.getAnimDrawableSubstitute, prevTileBtn.getAnimDrawableSubstitute, tileRect,
+    loxPlusBtn.getAnimDrawableSubstitute, loxMinusBtn.getAnimDrawableSubstitute, loyPlusBtn.getAnimDrawableSubstitute,
+    loyMinusBtn.getAnimDrawableSubstitute,
     hideToolbarBtnTop.getAnimDrawableSubstitute);
+
 
   def addControlsPanel() {
     DrawableEntitiesManager.deleteEntities(BOTTOM_PANEL, HIDE_TOOLBAR_BTN);
