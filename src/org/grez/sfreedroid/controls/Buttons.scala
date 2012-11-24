@@ -31,8 +31,6 @@ class TextRectButton(val text: String, override val rect: Rect, val action: ()=>
   private val selectedTextFont = "font05_blue";
 
   def draw() {
-   // glShadeModel(GL_FLAT);
-
     drawButtonBody(bodyColor);
     if (isMouseOn) {
       drawButtonBorder(selectedBorderColor);

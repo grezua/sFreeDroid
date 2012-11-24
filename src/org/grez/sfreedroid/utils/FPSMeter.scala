@@ -68,10 +68,7 @@ class FPSMeter()  {
   }
 
   def drawHistogram(drawX:Int, drawY:Int){
-    glShadeModel(GL_FLAT);
     glDisable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glColor4f(0.3f, 0f, 0.8f,0.8f);
     glBegin(GL_QUADS);
     glVertex2i(drawX,drawY);
@@ -93,7 +90,6 @@ class FPSMeter()  {
     }
 
     glEnd();
-     glDisable(GL_BLEND);
     glEnable(GL_TEXTURE_2D);
   }
 

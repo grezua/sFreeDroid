@@ -323,10 +323,7 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd]) e
   }
 
   private def drawRectangle(){
-    glShadeModel(GL_FLAT);
-    glDisable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDisable(GL_TEXTURE_2D);
     glColor4f(0.3f, 0f, 0.8f,0.8f);
     glBegin(GL_QUADS);
     glVertex2i(0,0);
@@ -335,7 +332,6 @@ class Console(val height:Int, val histSize:Int, val regCmds: List[ConsoleCmd]) e
     glVertex2i(0,height);
     glEnd();
     glEnable(GL_TEXTURE_2D);
-    glDisable(GL_BLEND);
   }
 
 

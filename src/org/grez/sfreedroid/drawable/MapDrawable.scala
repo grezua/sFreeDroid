@@ -64,7 +64,6 @@ class MapDrawable extends Control with Drawable with OnMousePosUpdate {
 
       glDisable(GL_TEXTURE_2D)
       glColor3f(0.2f, 0.5f, 1.0f);
-      glShadeModel(GL_FLAT);
       glBegin(GL_LINES);
        r.directDrw();
       glEnd();
@@ -107,7 +106,6 @@ private[drawable] class MapGridDrawable(val mouseHelper: MouseGridHelper) extend
   def drawGrid(selectedX: Int, selectedY: Int, flatX:Int, flatY:Int) {
        glDisable(GL_TEXTURE_2D)
        glColor3f(1.0f, 0f, 1.0f);
-       glShadeModel(GL_FLAT);
        glBegin(GL_LINES);
        for (i <- 0 to SIZE_X) {
          val curX = i * DEF_WIDTH;

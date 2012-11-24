@@ -106,7 +106,6 @@ object test2   {
 
     glEnable(GL_TEXTURE_2D)
     glDisable(GL_DEPTH_TEST)
-    //    glShadeModel(GL_FLAT);
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.4999f);
 

@@ -163,7 +163,6 @@ class TileChooserRect extends TranslateAnim {
     }
 
     glDisable(GL_TEXTURE_2D);
-    glShadeModel(GL_FLAT);
     glColor3f(red, green, blue);
     glBegin(GL_LINES);
     tileRect.directDrw();
@@ -177,7 +176,6 @@ class ToolbarPanelRect(override val rect: Rect, color: Color) extends Control wi
   def draw() {
     import color._
 
-    glShadeModel(GL_FLAT);
     glDisable(GL_TEXTURE_2D);
     glColor3f(red, green, blue);
     glBegin(GL_QUADS);

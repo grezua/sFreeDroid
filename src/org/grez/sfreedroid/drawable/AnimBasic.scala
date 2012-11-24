@@ -61,7 +61,6 @@ class ClickAnim(val x: Int, val y: Int, val color: Color, override val callBack:
   def drw() {
     import color._
 
-    glShadeModel(GL_FLAT);
     glDisable(GL_TEXTURE_2D);
     glColor3f(red, green, blue);
 
