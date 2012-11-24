@@ -1,10 +1,9 @@
 package org.grez.sfreedroid.utils
 
-import java.io.{StringReader, FileReader, FileWriter, File}
+import java.io.{FileWriter, File}
 import io.Source
 import scala.Array
-import util.Random
-import org.grez.sfreedroid.MapDefaults
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -53,8 +52,8 @@ object FileUtils {
     output.close();
   }
 
-  def loadMapFromFile(file:String): Array[Array[Int]] = {
-    val r: Array[Array[Int]] = Array.fill(MapDefaults.SIZE_X, MapDefaults.SIZE_Y) {0};
+  def loadMapFromFile(file:String, sizeX: Int, sizeY : Int): Array[Array[Int]] = {
+    val r: Array[Array[Int]] = Array.fill(sizeX, sizeY) {0};
     val src = Source.fromFile(file );
     val lines = src.getLines().toList;
     lines.foreach(l => {

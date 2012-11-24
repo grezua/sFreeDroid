@@ -109,10 +109,16 @@ object test2   {
     //    glShadeModel(GL_FLAT);
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.4999f);
-    //	  glDisable(GL_BLEND);
-    // glBlendFunc(GL_ONE, GL_ZERO);
+
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    glEnable(GL_LINE_SMOOTH);
     //    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+
+
 
     glViewport(0, 0, 1024, 768)
     glMatrixMode(GL_PROJECTION)

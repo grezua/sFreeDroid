@@ -33,6 +33,10 @@ class MapDrawable extends Control with Drawable with OnMousePosUpdate {
     var curY = 0;
     var curX = 0;
 
+    //glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0f,0f,0f,1.0f)
     for {y <-0 until SIZE_Y; x <-0 until SIZE_X  }{
 
     if (isOdd(y)){
@@ -48,6 +52,8 @@ class MapDrawable extends Control with Drawable with OnMousePosUpdate {
       draw(curX + ox,curY + oy,tileId)
 
     }
+    //glDisable(GL_BLEND);
+   // glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     drawSelected();
   }
 

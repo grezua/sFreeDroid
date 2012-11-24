@@ -19,7 +19,7 @@ import utils.{NumberUtils, FileUtils}
 
 object MapDefaults {
   val SIZE_X = 9;
-  val SIZE_Y = 18;
+  val SIZE_Y = 19;
   val NUM_OF_IDS = 52;
   val DEF_WIDTH = 134;
   val DEF_HEIGHT = 66;
@@ -92,7 +92,7 @@ object MapManager {
   }
 
 
-  lazy val mapa: Array[Array[Int]] = FileUtils.loadMapFromFile(MAP_FILE); //Array.fill(SIZE_X, SIZE_Y) {Random.nextInt(NUM_OF_IDS)};
+  lazy val mapa: Array[Array[Int]] = FileUtils.loadMapFromFile(MAP_FILE, SIZE_X, SIZE_Y); //Array.fill(SIZE_X, SIZE_Y) {Random.nextInt(NUM_OF_IDS)};
 
   lazy val tileOffsets: Array[Option[(Int,Int)]] = FileUtils.loadOffsetsFromFile(TILE_OFFSETS_FILE);
 
