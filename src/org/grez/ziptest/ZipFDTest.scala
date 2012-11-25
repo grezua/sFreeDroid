@@ -3,6 +3,7 @@ package org.grez.ziptest
 import java.util.zip.InflaterInputStream
 import java.io.{FileInputStream, File}
 import java.nio.{ByteOrder, ByteBuffer}
+import org.grez.sfreedroid.textures.ImgData
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,26 +44,29 @@ object ZipFDTest {
     getTestImg();
   }
 
-  def readLongArray(zf: InflaterInputStream, length: Int): Array[Byte] = {
+  def readDataToDirectBuffer(zf: InflaterInputStream, length: Int): ByteBuffer = {
     println(length);
-    val img1: Array[Byte] = new Array[Byte](length);
-            var leftToRead = img1.length;
-            var pos = 0;
+    val resultBuf = ByteBuffer.allocateDirect(length)
+    val readBuf: Array[Byte] = new Array[Byte](4096);
+            var leftToRead = length;
 
             while (leftToRead > 0) {
-              val br = zf.read(img1, pos, leftToRead);
+              val nr = if (leftToRead>readBuf.length)readBuf.length else leftToRead;
+
+              val br = zf.read(readBuf,0,nr);
+              println(br,leftToRead);
               if (br == -1) {
                 leftToRead = 0;
               } else {
-                println(br);
-                pos = pos + br;
+                resultBuf.put(readBuf,0,br);
                 leftToRead = leftToRead - br;
               }
             }
-    return img1;
+    resultBuf.flip();
+    return resultBuf;
   }
 
-  def getTestImg(): Array[Byte] = {
+  def getTestImg(): ImgData = {
     val f: File = new File("./graphics/droids/139/139.tux_image_archive.z");
        println(f.exists())
        val zf: InflaterInputStream = new InflaterInputStream(new FileInputStream(f));
@@ -94,14 +98,14 @@ object ZipFDTest {
 
          println(length);
 
-         val img1 = readLongArray(zf, length.getArrSize)
+         val img1 = readDataToDirectBuffer(zf, length.getArrSize)
 
 
          /*val length2 = readLength(zf);
 
          println(length2);*/
 
-         return img1;
+         return new ImgData(img1, length.height, length.width, true);
 
          /*
         Walk phases: 5 (0 -> 4)

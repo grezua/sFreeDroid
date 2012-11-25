@@ -3,6 +3,7 @@ package org.grez.sfreedroid.textures
 import org.lwjgl.opengl.GL11._
 import java.util.logging.{Level, Logger}
 import collection.mutable
+import org.grez.sfreedroid.drawable.Drawable
 
 /**
  * Created by IntelliJ IDEA.
@@ -33,7 +34,7 @@ private[textures] object FreeTxId {
 
 
 
-class Texture(imgData: ImgData, txID:Int, val widt: Int, val heg: Int){
+class Texture(imgData: ImgData, txID:Int, val widt: Int, val heg: Int) extends Drawable{
 
     val srcPixelFormat = if (imgData.alpha) GL_RGBA else GL_RGB;
     glBindTexture(GL_TEXTURE_2D, txID);

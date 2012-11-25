@@ -16,7 +16,8 @@ import input.{Keyboard, Mouse}
 import opengl.{Display, GL11, DisplayMode}
 import GL11._
 import java.nio.IntBuffer
-
+import textures.Texture
+import org.grez.ziptest.ZipFDTest
 
 
 object test2   {
@@ -31,6 +32,11 @@ object test2   {
     DrawableEntitiesManager.addEntity("mousepos", map.getMousePosDrawable,2);
     val pannel = new  BottomControlsPanelManager
     pannel.addControlsPanel();
+
+    val l = System.currentTimeMillis();
+    val tx = new Texture(ZipFDTest.getTestImg());
+    DrawableEntitiesManager.addEntity("sadasd", tx,4);
+    console.log("tx load time="+(System.currentTimeMillis() - l))
 
 
     var finished = false;
