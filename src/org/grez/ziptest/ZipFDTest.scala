@@ -41,7 +41,7 @@ object ZipFDTest {
   }
 
   def main(args: Array[String]) {
-    getTestImg();
+    getTestImg("./graphics/droids/139/139.tux_image_archive.z");
   }
 
   def readDataToDirectBuffer(zf: InflaterInputStream, length: Int): ByteBuffer = {
@@ -66,8 +66,32 @@ object ZipFDTest {
     return resultBuf;
   }
 
-  def getTestImg(): ImgData = {
-    val f: File = new File("./graphics/droids/139/139.tux_image_archive.z");
+  def flipImageDataVertically(buf: ByteBuffer, height: Int, pitch: Int) {
+    println("pitch= "+pitch)
+    val tb: Array[Array[Byte]] = Array.ofDim(2,pitch);
+
+    var endIdx = height/2;// beginIdx+1;
+    var beginIdx = endIdx-1;
+
+    while (beginIdx >=0) {
+     buf.position(beginIdx*pitch);
+     buf.get(tb(0));
+     buf.position(endIdx*pitch);
+     buf.get(tb(1));
+     buf.position(beginIdx*pitch);
+     buf.put(tb(1));
+     buf.position(endIdx*pitch);
+     buf.put(tb(0));
+
+      beginIdx -= 1;
+      endIdx += 1;
+    }
+
+    buf.flip();
+  }
+
+  def getTestImg(fileName: String): ImgData = {
+    val f: File = new File(fileName);
        println(f.exists())
        val zf: InflaterInputStream = new InflaterInputStream(new FileInputStream(f));
        try {
@@ -100,7 +124,7 @@ object ZipFDTest {
 
          val img1 = readDataToDirectBuffer(zf, length.getArrSize)
 
-
+         flipImageDataVertically(img1,length.height, length.width*4);
          /*val length2 = readLength(zf);
 
          println(length2);*/

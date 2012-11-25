@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL11._
 import java.util.logging.{Level, Logger}
 import collection.mutable
 import org.grez.sfreedroid.drawable.Drawable
+import org.lwjgl.opengl.GL32
 
 /**
  * Created by IntelliJ IDEA.
@@ -34,9 +35,9 @@ private[textures] object FreeTxId {
 
 
 
-class Texture(imgData: ImgData, txID:Int, val widt: Int, val heg: Int) extends Drawable{
+class Texture(imgData: ImgData, txID:Int, val widt: Int, val heg: Int, val srcPixelFormat: Int = GL_RGBA){
 
-    val srcPixelFormat = if (imgData.alpha) GL_RGBA else GL_RGB;
+    //val srcPixelFormat = if (imgData.alpha) GL32.GL_BGRA else GL_RGB;
     glBindTexture(GL_TEXTURE_2D, txID);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -45,7 +46,7 @@ class Texture(imgData: ImgData, txID:Int, val widt: Int, val heg: Int) extends D
 
   def this(imgData: ImgData, widt: Int, heg: Int) = this(imgData,FreeTxId.findFreId(),widt,heg);
 
-  def this(imgData: ImgData) = this(imgData,FreeTxId.findFreId(),imgData.w,imgData.h);
+  def this(imgData: ImgData, srcPixelFormat: Int = GL_RGBA) = this(imgData,FreeTxId.findFreId(),imgData.w,imgData.h, srcPixelFormat);
 
     def draw()  {
       glBindTexture(GL_TEXTURE_2D, txID);
@@ -70,5 +71,16 @@ class Texture(imgData: ImgData, txID:Int, val widt: Int, val heg: Int) extends D
        glTranslatef(x, y, 0);
        draw();
        glPopMatrix();
+  }
+}
+
+class TextureDrawable(tx: Texture, x: Int, y: Int) extends Drawable {
+  def draw() {
+//    glPushMatrix();
+//    glTranslatef(x, y, 0);
+  //  glRotatef(180, 0.0f,0.0f,1.0f);
+    tx.draw(x,y);
+//    glPopMatrix();
+
   }
 }

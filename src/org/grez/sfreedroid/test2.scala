@@ -13,10 +13,10 @@ import controls.BottomControlsPanelManager
 import debug.GlobalDebugState
 import org.lwjgl._
 import input.{Keyboard, Mouse}
-import opengl.{Display, GL11, DisplayMode}
+import opengl.{GL32, Display, GL11, DisplayMode}
 import GL11._
 import java.nio.IntBuffer
-import textures.Texture
+import textures.{TextureDrawable, Texture}
 import org.grez.ziptest.ZipFDTest
 
 
@@ -34,9 +34,16 @@ object test2   {
     pannel.addControlsPanel();
 
     val l = System.currentTimeMillis();
-    val tx = new Texture(ZipFDTest.getTestImg());
-    DrawableEntitiesManager.addEntity("sadasd", tx,4);
-    console.log("tx load time="+(System.currentTimeMillis() - l))
+    val tx1 = new Texture(ZipFDTest.getTestImg("./graphics/droids/139/139.tux_image_archive.z"),GL32.GL_BGRA);
+    DrawableEntitiesManager.addEntity("robot1", new TextureDrawable(tx1,10,10),4);
+
+    val tx2 = new Texture(ZipFDTest.getTestImg("./graphics/droids/123/123.tux_image_archive.z"),GL32.GL_BGRA);
+    DrawableEntitiesManager.addEntity("robot2", new TextureDrawable(tx2,100,250),4);
+
+    val tx3 = new Texture(ZipFDTest.getTestImg("./graphics/droids/476/476.tux_image_archive.z"),GL32.GL_BGRA);
+    DrawableEntitiesManager.addEntity("robot3", new TextureDrawable(tx3,300,170),4);
+
+    console.log("tx load time="+(System.currentTimeMillis() - l));
 
 
     var finished = false;
