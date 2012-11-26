@@ -35,7 +35,7 @@ private[textures] object FreeTxId {
 
 
 
-class Texture(imgData: ImgData, txID:Int, val widt: Int, val heg: Int, val srcPixelFormat: Int = GL_RGBA){
+class Texture(imgData: ImgData, val txID:Int, val widt: Int, val heg: Int, val srcPixelFormat: Int = GL_RGBA){
 
     //val srcPixelFormat = if (imgData.alpha) GL32.GL_BGRA else GL_RGB;
     glBindTexture(GL_TEXTURE_2D, txID);
