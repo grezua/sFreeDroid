@@ -43,21 +43,23 @@ object ToggleCMD extends ConsoleCmd("toggle", CmdParamsList(CmdParam("value", CP
       case s: String if s == FPS => {
         if (DrawableEntitiesManager.isEntityPresent(FPS)) {
           DrawableEntitiesManager.deleteEntity(FPS);
-          DrawableEntitiesManager.addEntity(FPSHISTOGRAMM, GlobalDebugState.fpsMeter.getHistogramDrawable(800,220),2);
+          DrawableEntitiesManager.addEntity(FPSHISTOGRAMM, GlobalDebugState.fpsMeter.getHistogramDrawable(800, 220), 2);
         } else if (DrawableEntitiesManager.isEntityPresent(FPSHISTOGRAMM)) {
           DrawableEntitiesManager.deleteEntity(FPSHISTOGRAMM);
         } else {
-          DrawableEntitiesManager.addEntity(FPS, GlobalDebugState.fpsMeter.getFPSDrawable(800,220),2);
+          DrawableEntitiesManager.addEntity(FPS, GlobalDebugState.fpsMeter.getFPSDrawable(800, 220), 2);
         }
-      } case s: String if s == MOUSEPOS => {
-          if (DrawableEntitiesManager.isEntityPresent(DBGMOUSEPOS)){ //cycle through 3 states: simple mouse pos, debug mouse pos, and none
-            DrawableEntitiesManager.deleteEntity(DBGMOUSEPOS);
-          } else if (DrawableEntitiesManager.isEntityPresent(MOUSEPOS)){
-            DrawableEntitiesManager.deleteEntity(MOUSEPOS);
-            DrawableEntitiesManager.addEntity(DBGMOUSEPOS, GlobalDebugState.mapDrawable.getGridDebugDrawable,2);
-          } else {
-            DrawableEntitiesManager.addEntity(MOUSEPOS, GlobalDebugState.mapDrawable.getMousePosDrawable,2);
-          }
+      }
+      case s: String if s == MOUSEPOS => {
+        if (DrawableEntitiesManager.isEntityPresent(DBGMOUSEPOS)) {
+          //cycle through 3 states: simple mouse pos, debug mouse pos, and none
+          DrawableEntitiesManager.deleteEntity(DBGMOUSEPOS);
+        } else if (DrawableEntitiesManager.isEntityPresent(MOUSEPOS)) {
+          DrawableEntitiesManager.deleteEntity(MOUSEPOS);
+          DrawableEntitiesManager.addEntity(DBGMOUSEPOS, GlobalDebugState.mapDrawable.getGridDebugDrawable, 2);
+        } else {
+          DrawableEntitiesManager.addEntity(MOUSEPOS, GlobalDebugState.mapDrawable.getMousePosDrawable, 2);
+        }
       }
       case _ => {
         console.logFromCommand("toggle: unknown parameter");
@@ -88,8 +90,8 @@ private object FontAutoIdentList extends SecondLevelAutoidentListProvider {
   def getStrList = FontManager.getAllFontNames;
 }
 
-object SetConsoleLogFontCMD extends ConsoleCmd("setconsolefont", CmdParamsList(CmdParam("fontVarIdx", CPTInt, "wich font to change (possible values: 0,1,2)", AutoIdentList("0","1","2")),
-  CmdParam("fontName", CPTString, "name of the font", Some(FontAutoIdentList) ))) {
+object SetConsoleLogFontCMD extends ConsoleCmd("setconsolefont", CmdParamsList(CmdParam("fontVarIdx", CPTInt, "wich font to change (possible values: 0,1,2)", AutoIdentList("0", "1", "2")),
+  CmdParam("fontName", CPTString, "name of the font", Some(FontAutoIdentList)))) {
   def getHelp = "sets the font for console"
 
   def execute(params: Option[List[Any]], console: Console) {
@@ -155,39 +157,39 @@ object DeleteDrawable extends ConsoleCmd("rementity", CmdParamsList(CmdParam("na
   }
 }
 
-object NextMapTile extends ConsoleCmd ("nexttile", None) {
+object NextMapTile extends ConsoleCmd("nexttile", None) {
   def getHelp = "cycle through flor tiles for selected map pos"
 
   def execute(params: Option[List[Any]], console: Console) {
     val selected = GlobalDebugState.selectedMapTile
-    if (selected.isDefined){
-      val (x,y) = selected.get;
+    if (selected.isDefined) {
+      val (x, y) = selected.get;
       import MapManager._;
-      if (mapa(x)(y) >= MapDefaults.NUM_OF_IDS) mapa(x)(y) = 0 else mapa(x)(y) +=1;
-      console.log("set id= "+mapa(x)(y))
+      if (mapa(x)(y) >= MapDefaults.NUM_OF_IDS) mapa(x)(y) = 0 else mapa(x)(y) += 1;
+      console.log("set id= " + mapa(x)(y))
     } else {
       console.log("tile is not selected")
     }
   }
 }
 
-object PreviousMapTile extends ConsoleCmd ("prevtile", None) {
+object PreviousMapTile extends ConsoleCmd("prevtile", None) {
   def getHelp = "cycle backwards through flor tiles for selected map pos"
 
-    def execute(params: Option[List[Any]], console: Console) {
-      val selected = GlobalDebugState.selectedMapTile
-      if (selected.isDefined){
-        val (x,y) = selected.get;
-        import MapManager._;
-        if (mapa(x)(y) <= 0) mapa(x)(y) = MapDefaults.NUM_OF_IDS else mapa(x)(y) -=1;
-        console.log("set id= "+mapa(x)(y))
-      } else {
-        console.log("tile is not selected")
-      }
+  def execute(params: Option[List[Any]], console: Console) {
+    val selected = GlobalDebugState.selectedMapTile
+    if (selected.isDefined) {
+      val (x, y) = selected.get;
+      import MapManager._;
+      if (mapa(x)(y) <= 0) mapa(x)(y) = MapDefaults.NUM_OF_IDS else mapa(x)(y) -= 1;
+      console.log("set id= " + mapa(x)(y))
+    } else {
+      console.log("tile is not selected")
     }
+  }
 }
 
-object SetMapTile extends ConsoleCmd ("settile", CmdParamsList(CmdParam("val", CmdParamType.CPTInt, "tile index to set"))) {
+object SetMapTile extends ConsoleCmd("settile", CmdParamsList(CmdParam("val", CmdParamType.CPTInt, "tile index to set"))) {
   def getHelp = "cycle backwards through flor tiles for selected map pos"
 
   def execute(params: Option[List[Any]], console: Console) {
@@ -214,24 +216,51 @@ object SetMapTile extends ConsoleCmd ("settile", CmdParamsList(CmdParam("val", C
   }
 }
 
-object SaveTileOffsets extends ConsoleCmd ("saveoffsets", None) {
+object SaveTileOffsets extends ConsoleCmd("saveoffsets", None) {
   def getHelp = "saves edited offsets to a file"
 
-    def execute(params: Option[List[Any]], console: Console) {
-        FileUtils.saveOffsetsToFile(MapDefaults.TILE_OFFSETS_FILE,MapManager.tileOffsets);
-    }
+  def execute(params: Option[List[Any]], console: Console) {
+    FileUtils.saveOffsetsToFile(MapDefaults.TILE_OFFSETS_FILE, MapManager.tileOffsets);
+  }
 }
 
-object SaveMap extends ConsoleCmd ("savemap", None) {
+object SaveMap extends ConsoleCmd("savemap", None) {
   def getHelp = "saves map to a file"
 
-    def execute(params: Option[List[Any]], console: Console) {
-        FileUtils.saveMapToFile(MapDefaults.MAP_FILE,MapManager.mapa);
-    }
+  def execute(params: Option[List[Any]], console: Console) {
+    FileUtils.saveMapToFile(MapDefaults.MAP_FILE, MapManager.mapa);
+  }
 }
+
+object SetScreenPos extends ConsoleCmd("setscreenpos", CmdParamsList(CmdParam("x", CmdParamType.CPTInt, "new X pos"), CmdParam("y", CmdParamType.CPTInt, "new Y pos"))) {
+  def getHelp = "set screen pos for helper"
+
+  def execute(params: Option[List[Any]], console: Console) {
+    val newX = params.get(0) match {
+      case i: Int => i;
+      case _ => {
+        console.log("errr");
+        return;
+      }
+    }
+
+    val newY = params.get(1) match {
+      case i: Int => i;
+      case _ => {
+        console.log("errr");
+        return;
+      }
+    }
+
+    console.log("setting new screen pos (" + newX + "," + newY + ")")
+    GlobalDebugState.meScreenPost = (newX, newY);
+  }
+  }
+
+
 
 
 /*Default console impl*/
 object DefaultConsole extends Console(200, 1000, List(GreetCMD, ToggleCMD, PrintCMDHistoryCMD, QuitCMD,
   SetConsoleLogFontCMD, ListAllFontsCMD, ListAllDrawables, DeleteDrawable, NextMapTile, PreviousMapTile,
-  SetMapTile,SaveTileOffsets, SaveMap));
+  SetMapTile, SaveTileOffsets, SaveMap, SetScreenPos));

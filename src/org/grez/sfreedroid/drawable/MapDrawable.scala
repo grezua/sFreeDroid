@@ -176,7 +176,7 @@ private[drawable] class MapGridDrawable(val mouseHelper: MouseGridHelper) extend
     RectUtils.getMapTileRect(selectedX, selectedY).directDrw();
 
     glEnd();
-    glFlush();
+    //glFlush();
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_LINE_SMOOTH);
     glPopMatrix();

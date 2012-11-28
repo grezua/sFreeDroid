@@ -23,4 +23,6 @@ object GlobalDebugState {
   var cursorMovementX: Float = 0;
   var cursorMovementY: Float = 0;
 
+  var meScreenPost: (cordX, cordY) = (1024/2, 768/2);
+
 }

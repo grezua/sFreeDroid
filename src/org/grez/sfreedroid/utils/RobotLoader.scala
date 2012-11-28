@@ -7,12 +7,9 @@ import org.grez.sfreedroid.textures.{Texture, ImgData}
 import org.grez.sfreedroid.drawable._
 import org.lwjgl.opengl.GL32
 import scala.Left
-import org.grez.sfreedroid.textures.ImgData
-import scala.Left
 import org.grez.sfreedroid.drawable.AngleTextureData
 import org.grez.sfreedroid.drawable.TextureWithSpec
 import org.grez.sfreedroid.textures.ImgData
-import java.awt.Robot.RobotDisposer
 
 /**
  * Created by IntelliJ IDEA.
@@ -96,7 +93,7 @@ class RobotLoader {
     readStream(zf,IMG_SPEC_SIZE);
     workBuffer.position(0);
     val spec = TxSpec(workBuffer);
-    println( "read Next("+angle+") -> "+phaseName + " ;spec ="+spec)
+//    println( "read Next("+angle+") -> "+phaseName + " ;spec ="+spec)
     val pixelData = readDataToDirectBuffer(zf, spec.getDataSize)
     flipImageDataVertically(pixelData, spec.height, spec.getPitch);
 
@@ -106,7 +103,8 @@ class RobotLoader {
     new TextureWithSpec(texture.txID, texture, spec)
   }
 
-  //mutable!
+  //this call reuses single tmp buffer, so it's quite mutable!
+  //todo: actually there is some straightforward way to eliminate mutable buffer from object internal state... but it seem that this doesn't really matter now...
   def loadRobot(fileName: String): Either[Exception,RobotDrawable] = {
     import org.grez.sfreedroid.console.{DefaultConsole => console}
 
@@ -148,15 +146,7 @@ class RobotLoader {
               );
 
 
-
             return  Right(new RobotDrawable(fileName,phases,angleTextureData));
-            /*
-           Walk phases: 5 (0 -> 4)
-           Attack phases: 5 (5 -> 9)
-           Gethit phases: 5 (10 -> 14)
-           Death phases: 5 (15 -> 19)
-           Stand phases: 8 (20 -> 27)
-            */
 
           }catch {
             case e: IOException => return Left(e);
