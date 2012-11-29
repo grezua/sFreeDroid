@@ -32,7 +32,7 @@ object test2   {
 
     DrawableEntitiesManager.addEntity("map", map,0);
     DrawableEntitiesManager.addEntity("mousepos", map.getMousePosDrawable,2);
-    DrawableEntitiesManager.addEntity("screenPosMouseHelp", new ScreenPosMouseHelperDrawable(), 1)
+
     val pannel = new  BottomControlsPanelManager
     pannel.addControlsPanel();
     addRobot();
@@ -73,11 +73,13 @@ object test2   {
         val robot1 = robotLoader.loadRobot("./graphics/droids/139/139.tux_image_archive.z");
 
         robot1.fold(left => console.log("robot loading err"), right => {
-          DrawableEntitiesManager.addEntity("r1", new TextureDrawable(right.angleTextureData(1).deathPhases(0).texture, 10, 10), 4);
-          DrawableEntitiesManager.addEntity("r2", new TextureDrawable(right.angleTextureData(1).deathPhases(1).texture, 90, 10), 4);
-          DrawableEntitiesManager.addEntity("r3", new TextureDrawable(right.angleTextureData(1).deathPhases(2).texture, 170, 10), 4);
-          DrawableEntitiesManager.addEntity("r4", new TextureDrawable(right.angleTextureData(1).deathPhases(3).texture, 250, 10), 4);
-          DrawableEntitiesManager.addEntity("r5", new TextureDrawable(right.angleTextureData(1).deathPhases(4).texture, 330, 10), 4);
+          DrawableEntitiesManager.addEntity("r1", new TextureDrawable(right.angleTextureData(4).deathPhases(0).texture, 10, 10), 4);
+          DrawableEntitiesManager.addEntity("r2", new TextureDrawable(right.angleTextureData(5).deathPhases(1).texture, 90, 10), 4);
+          DrawableEntitiesManager.addEntity("r3", new TextureDrawable(right.angleTextureData(6).deathPhases(2).texture, 170, 10), 4);
+          DrawableEntitiesManager.addEntity("r4", new TextureDrawable(right.angleTextureData(7).deathPhases(3).texture, 250, 10), 4);
+          DrawableEntitiesManager.addEntity("r5", new TextureDrawable(right.angleTextureData(0).deathPhases(4).texture, 330, 10), 4);
+
+          DrawableEntitiesManager.addEntity("screenPosMouseHelp", new ScreenPosMouseHelperDrawable(right), 1)
         });
 
         /*    val tx1 = new Texture(RobotLoader.getTestImg("./graphics/droids/139/139.tux_image_archive.z"),GL32.GL_BGRA);
