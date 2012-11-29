@@ -34,11 +34,12 @@ private[drawable] class MousePosDrawable(val mouseGridHelper: MouseGridHelper) e
 
   def draw() {
     import mouseGridHelper._
-
+    import scala.math._
     FontManager.drawText(800, 30, "mouseX=" + mouseX, "redfont");
     FontManager.drawText(800, 60, "mouseY=" + mouseY, "redfont");
     FontManager.drawText(800, 90, "cursor =[" +GlobalDebugState.cursorMovementX+";"+GlobalDebugState.cursorMovementY+"]", "redfont");
     FontManager.drawText(800, 120, "map tile[" + selectedX + "," + selectedY + "]", "redfont");
+    FontManager.drawText(800, 150, "arctan2 = "+round(toDegrees(atan2(mouseX - GlobalDebugState.meScreenPost._1,mouseY - GlobalDebugState.meScreenPost._2))), "redfont");
   }
 
 }
