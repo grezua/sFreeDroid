@@ -12,6 +12,7 @@ package org.grez.sfreedroid
 import controls.BottomControlsPanelManager
 import debug.GlobalDebugState
 import drawable.{LookAtMouseRobot, ScreenPosMouseHelperDrawable}
+import enemies.{EnemyManager, EnemyLoadManager}
 import org.lwjgl._
 import input.{Keyboard, Mouse}
 import opengl.{GL32, Display, GL11, DisplayMode}
@@ -69,8 +70,9 @@ object test2   {
 //      def run() {
 //        Thread.sleep(2000);
         val l = System.currentTimeMillis();
-        val robotLoader = new RobotLoader();
-        val robot1 = robotLoader.loadRobot("./graphics/droids/139/139.tux_image_archive.z");
+       console.log(EnemyManager.allEnemies);
+
+/*        val robot1 = EnemyLoadManager.robot139
 
         robot1.fold(left => console.log("robot loading err"), right => {
           DrawableEntitiesManager.addEntity("r1", new TextureDrawable(right.angleTextureData(4).deathPhases(0).texture, 10, 10), 4);
@@ -79,12 +81,14 @@ object test2   {
           DrawableEntitiesManager.addEntity("r4", new TextureDrawable(right.angleTextureData(7).deathPhases(3).texture, 250, 10), 4);
           DrawableEntitiesManager.addEntity("r5", new TextureDrawable(right.angleTextureData(0).deathPhases(4).texture, 330, 10), 4);
 
-        });
+        });*/
 
-        val male =  robotLoader.loadRobot("./graphics/droids/default_male/default_male.tux_image_archive.z");
+        val male =  EnemyLoadManager.male
         male.fold(left => console.log("robot lading err"), right => {
           DrawableEntitiesManager.addEntity("LookAtMouseRobot", new LookAtMouseRobot(right), 1)
         })
+
+    DrawableEntitiesManager.addEntity("allRobots", EnemyManager.getDrawable, 1)
 
         /*    val tx1 = new Texture(RobotLoader.getTestImg("./graphics/droids/139/139.tux_image_archive.z"),GL32.GL_BGRA);
     DrawableEntitiesManager.addEntity("robot1", new TextureDrawable(tx1,10,10),4);
