@@ -11,7 +11,7 @@ package org.grez.sfreedroid
 
 import controls.BottomControlsPanelManager
 import debug.GlobalDebugState
-import drawable.ScreenPosMouseHelperDrawable
+import drawable.{LookAtMouseRobot, ScreenPosMouseHelperDrawable}
 import org.lwjgl._
 import input.{Keyboard, Mouse}
 import opengl.{GL32, Display, GL11, DisplayMode}
@@ -79,7 +79,7 @@ object test2   {
           DrawableEntitiesManager.addEntity("r4", new TextureDrawable(right.angleTextureData(7).deathPhases(3).texture, 250, 10), 4);
           DrawableEntitiesManager.addEntity("r5", new TextureDrawable(right.angleTextureData(0).deathPhases(4).texture, 330, 10), 4);
 
-          DrawableEntitiesManager.addEntity("screenPosMouseHelp", new ScreenPosMouseHelperDrawable(right), 1)
+          DrawableEntitiesManager.addEntity("LookAtMouseRobot", new LookAtMouseRobot(right), 1)
         });
 
         /*    val tx1 = new Texture(RobotLoader.getTestImg("./graphics/droids/139/139.tux_image_archive.z"),GL32.GL_BGRA);

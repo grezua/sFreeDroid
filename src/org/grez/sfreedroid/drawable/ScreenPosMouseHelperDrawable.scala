@@ -14,7 +14,7 @@ import math._
  * To change this template use File | Settings | File Templates.
  */
 
-object defConstants {
+object DefConstants {
   val tan_22_5 = tan(toRadians(22.5)).toFloat;
 }
 
@@ -28,7 +28,7 @@ abstract class SideSpec {
 }
 
 class CalcScreensConstStructure(val sx: Int, val sy: Int){
-  import defConstants.tan_22_5;
+  import DefConstants.tan_22_5;
 
   val (heightTop, heightBottom) = (sy, 768 - sy);
   val (widthLeft, widthRight) =   (sx, 1024 - sx);
@@ -134,11 +134,29 @@ object AllSpecs {
   def apply() = a;
 }
 
-class ScreenPosMouseHelperDrawable(robot: RobotDrawable) extends Drawable with OnMousePosUpdate {
+class LookAtMouseRobot (robot: RobotDrawable) extends Drawable with OnMousePosUpdate {
+  def draw() {
+    val (sx, sy) = GlobalDebugState.meScreenPost;
+    val mouseAngle = toDegrees(atan2(mouseX - sx,mouseY - sy))
+
+    val screenConst = new  CalcScreensConstStructure(sx,sy);
+    import screenConst._;
+
+    val robotSpec = AllSpecs().find( _.isMouseAngleIn(mouseAngle)).getOrElse(TopSideSpec);
+
+    val currentAngleData= robot.angleTextureData(robotSpec.getRobotIndex);
+    val txSpec = currentAngleData.standPhases(0).spec;
+
+    val (dx,dy) = (sx - txSpec.origWidth/2, sy - txSpec.origHeight/2);
+    currentAngleData.standPhases(0).texture.draw(dx,dy);
+
+  }
+}
+
+class ScreenPosMouseHelperDrawable() extends Drawable with OnMousePosUpdate {
 
   import scala.math._;
 
-  val tan_22_5 = tan(toRadians(22.5));
 
   def draw() {
     val (sx, sy) = GlobalDebugState.meScreenPost;
@@ -206,7 +224,5 @@ class ScreenPosMouseHelperDrawable(robot: RobotDrawable) extends Drawable with O
     glEnd();
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_LINE_SMOOTH);
-
-
   }
 }

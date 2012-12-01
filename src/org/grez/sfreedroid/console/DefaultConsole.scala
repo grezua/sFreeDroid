@@ -7,6 +7,7 @@ import org.grez.sfreedroid.{MapDefaults, MapManager, DrawableEntitiesManager}
 import scala.Some
 import org.grez.sfreedroid.utils.FileUtils
 
+
 /* Console command Implementations!  */
 
 object GreetCMD extends ConsoleCmd("greet", None) {
@@ -17,16 +18,21 @@ object GreetCMD extends ConsoleCmd("greet", None) {
   }
 }
 
-object ToggleCMD extends ConsoleCmd("toggle", CmdParamsList(CmdParam("value", CPTString, "grid, fps, mousepos", AutoIdentList("grid", "fps", "mousepos")))) {
+object ToggleCMD extends ConsoleCmd("toggle", CmdParamsList(CmdParam("value", CPTString, "grid, fps, mousepos, screenpos", AutoIdentList("grid", "fps", "mousepos", "screenpos")))) {
   val FPS = "fps";
   val FPSHISTOGRAMM = "fps_histogramm";
   val GRID = "grid"
+  val SCREENPOS = "screenpos";
   val MOUSEPOS = "mousepos"
   val DBGMOUSEPOS = "dbg_mousepos"
+  val DBGSCREENPOS = "dbg_screenpos"
 
   def getHelp = "toggle some global state"
 
   def execute(params: Option[List[Any]], console: Console) {
+    import org.grez.sfreedroid.drawable.ScreenPosMouseHelperDrawable
+    import DrawableEntitiesManager._;
+
     if (params.isEmpty) {
       console.logFromCommand("toggle: unknown parameter");
       return;
@@ -34,31 +40,38 @@ object ToggleCMD extends ConsoleCmd("toggle", CmdParamsList(CmdParam("value", CP
 
     params.get(0) match {
       case s: String if s == GRID => {
-        if (DrawableEntitiesManager.isEntityPresent(GRID)) {
-          DrawableEntitiesManager.deleteEntity(GRID);
+        if (isEntityPresent(GRID)) {
+          deleteEntity(GRID);
         } else {
-          DrawableEntitiesManager.addEntity(GRID, GlobalDebugState.mapDrawable.getGridDrawable, 1);
+          addEntity(GRID, GlobalDebugState.mapDrawable.getGridDrawable, 1);
         }
       }
       case s: String if s == FPS => {
-        if (DrawableEntitiesManager.isEntityPresent(FPS)) {
-          DrawableEntitiesManager.deleteEntity(FPS);
-          DrawableEntitiesManager.addEntity(FPSHISTOGRAMM, GlobalDebugState.fpsMeter.getHistogramDrawable(800, 220), 2);
-        } else if (DrawableEntitiesManager.isEntityPresent(FPSHISTOGRAMM)) {
-          DrawableEntitiesManager.deleteEntity(FPSHISTOGRAMM);
+        if (isEntityPresent(FPS)) {
+          deleteEntity(FPS);
+          addEntity(FPSHISTOGRAMM, GlobalDebugState.fpsMeter.getHistogramDrawable(800, 220), 2);
+        } else if (isEntityPresent(FPSHISTOGRAMM)) {
+          deleteEntity(FPSHISTOGRAMM);
         } else {
-          DrawableEntitiesManager.addEntity(FPS, GlobalDebugState.fpsMeter.getFPSDrawable(800, 220), 2);
+          addEntity(FPS, GlobalDebugState.fpsMeter.getFPSDrawable(800, 220), 2);
         }
       }
       case s: String if s == MOUSEPOS => {
-        if (DrawableEntitiesManager.isEntityPresent(DBGMOUSEPOS)) {
+        if (isEntityPresent(DBGMOUSEPOS)) {
           //cycle through 3 states: simple mouse pos, debug mouse pos, and none
-          DrawableEntitiesManager.deleteEntity(DBGMOUSEPOS);
-        } else if (DrawableEntitiesManager.isEntityPresent(MOUSEPOS)) {
-          DrawableEntitiesManager.deleteEntity(MOUSEPOS);
-          DrawableEntitiesManager.addEntity(DBGMOUSEPOS, GlobalDebugState.mapDrawable.getGridDebugDrawable, 2);
+          deleteEntity(DBGMOUSEPOS);
+        } else if (isEntityPresent(MOUSEPOS)) {
+          deleteEntity(MOUSEPOS);
+          addEntity(DBGMOUSEPOS, GlobalDebugState.mapDrawable.getGridDebugDrawable, 2);
         } else {
-          DrawableEntitiesManager.addEntity(MOUSEPOS, GlobalDebugState.mapDrawable.getMousePosDrawable, 2);
+          addEntity(MOUSEPOS, GlobalDebugState.mapDrawable.getMousePosDrawable, 2);
+        }
+      }
+      case s: String if s == SCREENPOS => {
+        if (isEntityPresent(DBGSCREENPOS)){
+          deleteEntity(DBGSCREENPOS);
+        }else {
+          addEntity(DBGSCREENPOS, new ScreenPosMouseHelperDrawable(),3)
         }
       }
       case _ => {
