@@ -79,8 +79,12 @@ object test2   {
           DrawableEntitiesManager.addEntity("r4", new TextureDrawable(right.angleTextureData(7).deathPhases(3).texture, 250, 10), 4);
           DrawableEntitiesManager.addEntity("r5", new TextureDrawable(right.angleTextureData(0).deathPhases(4).texture, 330, 10), 4);
 
-          DrawableEntitiesManager.addEntity("LookAtMouseRobot", new LookAtMouseRobot(right), 1)
         });
+
+        val male =  robotLoader.loadRobot("./graphics/droids/default_male/default_male.tux_image_archive.z");
+        male.fold(left => console.log("robot lading err"), right => {
+          DrawableEntitiesManager.addEntity("LookAtMouseRobot", new LookAtMouseRobot(right), 1)
+        })
 
         /*    val tx1 = new Texture(RobotLoader.getTestImg("./graphics/droids/139/139.tux_image_archive.z"),GL32.GL_BGRA);
     DrawableEntitiesManager.addEntity("robot1", new TextureDrawable(tx1,10,10),4);
