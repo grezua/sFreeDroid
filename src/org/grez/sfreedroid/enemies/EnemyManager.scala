@@ -44,7 +44,7 @@ object EnemyManager {
   //val tx139Drw =  robot139.fold(right => null, left => left.angleTextureData(0).standPhases(0))
   val draw139: (Float,Float, Int) => Unit = if (robot139.isLeft) ((x,y, angle) => simpleDrawOnScreen(x,y)) else ((x,y, angle)=> {
     val r = robot139.right.get.angleTextureData(angle).standPhases(0);
-    r.texture.draw( x - r.spec.origWidth/2, y-r.spec.origHeight );
+    r.texture.draw( x /*- r.spec.origWidth/2*/ + r.spec.xoff, y/*-r.spec.origHeight*/+ r.spec.yoff );
   }) ;
 
     private val rect = Rect((0,0),(10,10));
@@ -75,11 +75,11 @@ object EnemyManager {
             } else {
               draw139(curX,curY,a);
             }
-
+          }
             locA +=1;
             if (locA >= 800) locA =0;
 
-          }
+
         }
 
 
