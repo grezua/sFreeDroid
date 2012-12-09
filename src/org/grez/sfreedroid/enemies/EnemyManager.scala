@@ -69,7 +69,7 @@ object EnemyManager {
               ((DEF_WIDTH * mapPosX) - (DEF_WIDTH / 2) + HALF_DEF_WIDTH, (DEF_HEIGHT / 2 * mapPosY) - (DEF_HEIGHT / 2) + HALF_DEF_HEIGHT);
           }
 
-          if (curX-mx >= -200 && curX-mx <= 1024 && curY-my >= - 200 && curY-my <= 768){
+          if (curX-mx >= -200 && curX-mx <= 1124 && curY-my >= - 200 && curY-my <= 868){
             if (rotateAnim) {
               draw139(curX,curY,locA/100);
             } else {

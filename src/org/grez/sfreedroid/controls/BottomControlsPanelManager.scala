@@ -24,13 +24,21 @@ import org.grez.sfreedroid.DrawableEntity
  */
 
 private[controls] object StringConstants {
+
+  val TOGGLE_GRID_BTN = "Toggle_Grid_btn";
+  val TOGGLE_FPS_BTN = "Toggle_FPS_btn";
+  val TOGGLE_MOUSE_POS_BTN = "Toggle_MousePos_btn";
+  val NEXT_TILE_BTN = "Next_Tile_btn";
+  val PREV_TILE_BTN = "Prev_Tile_btn";
   val BOTTOM_PANEL = "Bottom_Panel";
   val HIDE_TOOLBAR_BTN = "Hide_Toolbar_btn";
   val TILE_RECT =  "Tile_rect";
-  val LOX_PLUS_BTN = "Lox_Plus_btn"
-  val LOY_PLUS_BTN = "Loy_Plus_btn"
-  val LOX_MINUS_BTN = "Lox_Minus_btn"
-  val LOY_MINUS_BTN = "Loy_Minus_btn"
+  val LOX_PLUS_BTN = "Lox_Plus_btn";
+  val LOY_PLUS_BTN = "Loy_Plus_btn";
+  val LOX_MINUS_BTN = "Lox_Minus_btn";
+  val LOY_MINUS_BTN = "Loy_Minus_btn";
+  val BP_SHOW_ANIM = "BP_show_Anim";
+  val BP_HIDE_ANIM = "BP_hide_Anim";
 }
 
 class BottomControlsPanelManager {
@@ -60,15 +68,15 @@ class BottomControlsPanelManager {
 
   def addControlsPanel() {
     DrawableEntitiesManager.deleteEntities(BOTTOM_PANEL, HIDE_TOOLBAR_BTN);
-    DrawableEntitiesManager.addEntity("BP_show_Anim", new ControlPanelHideAnimation(false, animList, (() => {
-      DrawableEntitiesManager.deleteEntity("BP_show_Anim");
+    DrawableEntitiesManager.addEntity(BP_SHOW_ANIM, new ControlPanelHideAnimation(false, animList, (() => {
+      DrawableEntitiesManager.deleteEntity(BP_SHOW_ANIM);
       DrawableEntitiesManager.addEntities(
         DrawableEntity(BOTTOM_PANEL, bottom_panel, 2),
-        DrawableEntity("Togle_Grid_btn", toggleGridBtn, 3),
-        DrawableEntity("Togle_FPS_btn", toggleFpsBtn, 3),
-        DrawableEntity("Togle_MousePos_btn", toggleMouseBtn, 3),
-        DrawableEntity("Next_Tile_btn", nextTileBtn, 3),
-        DrawableEntity("Prev_Tile_btn", prevTileBtn, 3),
+        DrawableEntity(TOGGLE_GRID_BTN, toggleGridBtn, 3),
+        DrawableEntity(TOGGLE_FPS_BTN, toggleFpsBtn, 3),
+        DrawableEntity(TOGGLE_MOUSE_POS_BTN, toggleMouseBtn, 3),
+        DrawableEntity(NEXT_TILE_BTN, nextTileBtn, 3),
+        DrawableEntity(PREV_TILE_BTN, prevTileBtn, 3),
         DrawableEntity(TILE_RECT,tileRect,3),
         DrawableEntity(LOX_PLUS_BTN,loxPlusBtn,3),
         DrawableEntity(LOX_MINUS_BTN,loxMinusBtn,3),
@@ -79,11 +87,11 @@ class BottomControlsPanelManager {
   }
 
   lazy val hideToolbarAction: () => Unit = (() => {
-    DrawableEntitiesManager.deleteEntities(BOTTOM_PANEL, "Togle_Grid_btn", "Togle_FPS_btn", "Togle_MousePos_btn",
-      "Next_Tile_btn", "Prev_Tile_btn", TILE_RECT, LOX_PLUS_BTN, LOX_MINUS_BTN, LOY_PLUS_BTN, LOY_MINUS_BTN,
-      "Hide_Toolbar_btn");
-    DrawableEntitiesManager.addEntity("BP_hide_Anim", new ControlPanelHideAnimation(true, animList, (() => {
-      DrawableEntitiesManager.deleteEntity("BP_hide_Anim");
+    DrawableEntitiesManager.deleteEntities(BOTTOM_PANEL, TOGGLE_GRID_BTN, TOGGLE_FPS_BTN, TOGGLE_MOUSE_POS_BTN,
+      NEXT_TILE_BTN, PREV_TILE_BTN, TILE_RECT, LOX_PLUS_BTN, LOX_MINUS_BTN, LOY_PLUS_BTN, LOY_MINUS_BTN,
+      HIDE_TOOLBAR_BTN);
+    DrawableEntitiesManager.addEntity(BP_HIDE_ANIM, new ControlPanelHideAnimation(true, animList, (() => {
+      DrawableEntitiesManager.deleteEntity(BP_HIDE_ANIM);
       DrawableEntitiesManager.addEntity(BOTTOM_PANEL, new ToolbarPanelRect(Rect((0, 760), (1024, 768)), Color(0f, 0f, 0f)), 2);
       DrawableEntitiesManager.addEntity(HIDE_TOOLBAR_BTN, hideToolbarBtnBottom, 3);
     })), 2)
