@@ -14,6 +14,7 @@ import org.grez.sfreedroid.DrawableEntity
 
 import org.grez.sfreedroid.textures.Color
 import org.grez.sfreedroid.DrawableEntity
+import collection.immutable
 
 /**
  * Created with IntelliJ IDEA.
@@ -45,25 +46,20 @@ class BottomControlsPanelManager {
   import StringConstants._;
 
   val bottom_panel = new ToolbarPanelRect(Rect((0, 565), (1024, 775)), Color(0f, 0f, 0f));
-  val toggleGridBtn = new TextButton("toggle grid", 40, 635, "toggle grid");
-  val toggleFpsBtn = new TextButton("toggle fps", 40, 685, "toggle fps");
-  val toggleMouseBtn = new TextButton("toggle mousepos", 40, 735, "toggle mousepos");
-  val nextTileBtn = new TextButton("->",890,650,"nexttile");
-  val prevTileBtn = new TextButton("<-",690,650,"prevtile");
-  val tileRect = new TileChooserRect;
-  val loxPlusBtn = new SmallTextActionButton("+", 765, 575, (() => tileRect.inc_lox()));
-  val loxMinusBtn = new SmallTextActionButton("-", 765, 600, (() => tileRect.dec_lox()));
-  val loyPlusBtn = new SmallTextActionButton("+", 935, 575, (() => tileRect.inc_loy()));
-  val loyMinusBtn = new SmallTextActionButton("-", 935, 600, (() => tileRect.dec_loy()));
-  val hideToolbarBtnTop = new TextActionButton("^", 500, 540, hideToolbarAction);
-  val hideToolbarBtnBottom = new TextActionButton("^", 500, 740, (() => addControlsPanel()));
+  val toggleDbgButtonsPanel: ControlsPanel = new ControlsPanel;
 
-  val animList: List[AnimDrawableSubstitute] = List(bottom_panel, toggleGridBtn.getAnimDrawableSubstitute,
-    toggleFpsBtn.getAnimDrawableSubstitute, toggleMouseBtn.getAnimDrawableSubstitute,
-    nextTileBtn.getAnimDrawableSubstitute, prevTileBtn.getAnimDrawableSubstitute, tileRect,
-    loxPlusBtn.getAnimDrawableSubstitute, loxMinusBtn.getAnimDrawableSubstitute, loyPlusBtn.getAnimDrawableSubstitute,
-    loyMinusBtn.getAnimDrawableSubstitute,
-    hideToolbarBtnTop.getAnimDrawableSubstitute);
+  toggleDbgButtonsPanel.addItem(TOGGLE_GRID_BTN,new TextButton("toggle grid", 40, 635, "toggle grid"),3);
+  toggleDbgButtonsPanel.addItem(TOGGLE_FPS_BTN,new TextButton("toggle fps", 40, 685, "toggle fps"),3 )
+  toggleDbgButtonsPanel.addItem(TOGGLE_MOUSE_POS_BTN,new TextButton("toggle mousepos", 40, 735, "toggle mousepos"),3)
+
+  val tileControlsPanel = TileControlPanel;
+
+  val hideToolbarBtnTop = new TextActionButton("^", 500, 540, hideToolbarAction);
+  val hideToolbarBtnBottom = new TextActionButton("^", 500, 740, addControlsPanel);
+
+
+  def animList: List[AnimDrawableSubstitute] = List(bottom_panel, hideToolbarBtnTop.getAnimDrawableSubstitute) ++
+    toggleDbgButtonsPanel.getAnimList ++ tileControlsPanel.getAnimList;
 
 
   def addControlsPanel() {
@@ -72,30 +68,20 @@ class BottomControlsPanelManager {
       DrawableEntitiesManager.deleteEntity(BP_SHOW_ANIM);
       DrawableEntitiesManager.addEntities(
         DrawableEntity(BOTTOM_PANEL, bottom_panel, 2),
-        DrawableEntity(TOGGLE_GRID_BTN, toggleGridBtn, 3),
-        DrawableEntity(TOGGLE_FPS_BTN, toggleFpsBtn, 3),
-        DrawableEntity(TOGGLE_MOUSE_POS_BTN, toggleMouseBtn, 3),
-        DrawableEntity(NEXT_TILE_BTN, nextTileBtn, 3),
-        DrawableEntity(PREV_TILE_BTN, prevTileBtn, 3),
-        DrawableEntity(TILE_RECT,tileRect,3),
-        DrawableEntity(LOX_PLUS_BTN,loxPlusBtn,3),
-        DrawableEntity(LOX_MINUS_BTN,loxMinusBtn,3),
-        DrawableEntity(LOY_PLUS_BTN,loyPlusBtn,3),
-        DrawableEntity(LOY_MINUS_BTN,loyMinusBtn,3),
         DrawableEntity(HIDE_TOOLBAR_BTN, hideToolbarBtnTop, 3));
+      DrawableEntitiesManager.addEntities(toggleDbgButtonsPanel.getEntries ++ tileControlsPanel.getEntries :_*);
     })), 2)
   }
 
-  lazy val hideToolbarAction: () => Unit = (() => {
-    DrawableEntitiesManager.deleteEntities(BOTTOM_PANEL, TOGGLE_GRID_BTN, TOGGLE_FPS_BTN, TOGGLE_MOUSE_POS_BTN,
-      NEXT_TILE_BTN, PREV_TILE_BTN, TILE_RECT, LOX_PLUS_BTN, LOX_MINUS_BTN, LOY_PLUS_BTN, LOY_MINUS_BTN,
-      HIDE_TOOLBAR_BTN);
+  def hideToolbarAction()  {
+    DrawableEntitiesManager.deleteEntities(BOTTOM_PANEL, HIDE_TOOLBAR_BTN);
+    DrawableEntitiesManager.deleteEntities(toggleDbgButtonsPanel.getEntriesNames ++ tileControlsPanel.getEntriesNames :_*);
     DrawableEntitiesManager.addEntity(BP_HIDE_ANIM, new ControlPanelHideAnimation(true, animList, (() => {
       DrawableEntitiesManager.deleteEntity(BP_HIDE_ANIM);
       DrawableEntitiesManager.addEntity(BOTTOM_PANEL, new ToolbarPanelRect(Rect((0, 760), (1024, 768)), Color(0f, 0f, 0f)), 2);
       DrawableEntitiesManager.addEntity(HIDE_TOOLBAR_BTN, hideToolbarBtnBottom, 3);
     })), 2)
-  });
+  };
 
 }
 
@@ -115,72 +101,7 @@ class ControlPanelHideAnimation(val direction: Boolean, val entities: List[AnimD
 }
 
 
-class TileChooserRect extends TranslateAnim {
-  import org.grez.sfreedroid.MapManager._
-  import org.grez.sfreedroid.MapDefaults._
 
-  val tileRect = RectUtils.getMapTileRect(6, 20);
-  val tileDrawX = (DEF_WIDTH * 6) - (DEF_WIDTH / 2);
-  val tileDrawY = (DEF_HEIGHT /2 * 20) - (DEF_HEIGHT / 2);
-  val color = Color(0.2f, 0.5f, 1.0f);
-
-  private def selectedTransformFunction(lbd: (Int, Int) => (Int, Int)) {
-    getSelectedTileId.foreach(tileId => {
-      val (ox, oy) = tileOffsets(tileId).getOrElse((0, 0))
-      tileOffsets(tileId) = Option(lbd(ox, oy));
-    });
-  }
-
-  def inc_lox(){
-    selectedTransformFunction((ox,oy)=>(ox+1,oy));
-  }
-
-  def dec_lox(){
-    selectedTransformFunction((ox,oy)=>(ox-1,oy));
-  }
-
-  def inc_loy(){
-    selectedTransformFunction((ox,oy)=>(ox,oy+1));
-  }
-
-  def dec_loy() {
-    selectedTransformFunction((ox,oy)=>(ox,oy-1));
-  }
-
-  def getSelectedTileId: Option[Int] = {
-    val selected = GlobalDebugState.selectedMapTile;
-    if (selected.isDefined) {
-      val (sx, sy) = selected.get;
-      Option(mapa(sx)(sy))
-    } else None;
-  }
-
-  def draw() {
-    import color._;
-    import FontManager._;
-
-    val selected = GlobalDebugState.selectedMapTile;
-    if (selected.isDefined){
-      val (sx,sy) = selected.get;
-      val id = mapa(sx)(sy);
-      val tile = allTestData(id);
-      val (lox, loy) = tileOffsets(id).getOrElse((0,0));
-
-      tile.tx.draw(tileDrawX + lox, tileDrawY + loy);
-      val txt = "["+sx+","+sy+"] id="+id+"; offX="+tile.offsetX+"; offY="+tile.offsetY;
-      drawText(680,710,txt,RED_FONT);
-      drawText(680,600,"lox="+lox,RED_FONT);
-      drawText(850,600,"loy="+loy,RED_FONT);
-    }
-
-    glDisable(GL_TEXTURE_2D);
-    glColor3f(red, green, blue);
-    glBegin(GL_LINES);
-    tileRect.directDrw();
-    glEnd();
-    glEnable(GL_TEXTURE_2D);
-  }
-}
 
 class ToolbarPanelRect(override val rect: Rect, color: Color) extends Control with TranslateAnim {
 
