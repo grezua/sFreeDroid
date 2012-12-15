@@ -13,24 +13,28 @@ import controls.BottomControlsPanelManager
 import debug.GlobalDebugState
 import drawable.{LookAtMouseRobot, ScreenPosMouseHelperDrawable}
 import enemies.{EnemyManager, EnemyLoadManager}
+import font.FontManager
 import org.lwjgl._
 import input.{Keyboard, Mouse}
 import opengl.{GL32, Display, GL11, DisplayMode}
 import GL11._
 import java.nio.IntBuffer
-import textures.{TextureDrawable}
+import textures.{Rect, TextureDrawable}
 import utils.RobotLoader
 
 
 
 object test2   {
-  import GlobalDebugState.fpsMeter ;
-  import GlobalDebugState.{mapDrawable => map};
+
   import console.{DefaultConsole => console};
 
   def main(args: Array[String]) {
+    val t = System.currentTimeMillis();
+
     init();
 
+    import GlobalDebugState.fpsMeter ;
+    import GlobalDebugState.{mapDrawable => map};
     DrawableEntitiesManager.addEntity("map", map,0);
     DrawableEntitiesManager.addEntity("mousepos", map.getMousePosDrawable,2);
 
@@ -40,6 +44,7 @@ object test2   {
 
     var finished = false;
 
+    console.log("Init time: "+ (System.currentTimeMillis() - t))
     while (!finished){
       Display.sync(60);
       Display.update();
@@ -152,6 +157,9 @@ object test2   {
     //glLoadIdentity
 
     glClearColor(0.5f, 1.0f, 0.5f, 1.0f);
+
+    FontManager.drawText(200,200,"LOADING...", FontManager.RED_FONT);
+    Display.update();
 
     //texture ID bind to gl
     val textureIDBuffer: IntBuffer = BufferUtils.createIntBuffer(MapManager.allTestData.size);

@@ -4,8 +4,12 @@ import org.lwjgl.opengl.GL11._
 import java.nio.ByteBuffer
 import org.grez.sfreedroid._
 import console.DefaultConsole
+
 import textures._
+
+import textures.ImgData
 import utils.FileUtils
+import scala.Some
 
 /**
  * Created by IntelliJ IDEA.
@@ -71,7 +75,7 @@ private[font] object defaultFontConfig {
 
 
   val str = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-  private val fontFiles =  FileUtils.getPngFileList("./graphics/font/");
+  private val fontFiles =  FileUtils.getPngFileList("./graphics/font/").filterNot(_.endsWith("redfont.png"));
 
   lazy val defaultMapping = defaultFontMapping();
 
@@ -87,6 +91,8 @@ private[font] object defaultFontConfig {
      fontFiles.map((f:String)=>(rd(f),gtfFC(f))).toMap;
   }
 }
+
+private[font] object redFont extends FontConfig("./graphics/font/redfont.png",fontLoadUtil.mappingFromImg(ImageLoad.loadImgFile("./graphics/font/redfont.png"),defaultFontConfig.str));
 
 object FontManager {
   val RED_FONT = "redfont";
@@ -112,7 +118,7 @@ object FontManager {
 
     glPushMatrix();
     glTranslatef(x, y, 0);
-    val fc =  allFonts(fontName).map.orNull;
+    val fc =  if(fontName == RED_FONT) redFont.map.orNull else allFonts(fontName).map.orNull; //redfont is going to be loaded first...
     if (null == fc) return ;
 
     str.foreach((f: Char) => {

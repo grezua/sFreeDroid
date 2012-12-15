@@ -78,8 +78,6 @@ object MapManager {
       v
     }
 
-
-
     def genList(base: String,  From: Int, To: Int): List[String] = {
       (for {i <- From to To} yield base + addLeadingZeroes(i.toString)).toList;
     }
