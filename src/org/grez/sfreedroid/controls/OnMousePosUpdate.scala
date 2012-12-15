@@ -28,7 +28,13 @@ abstract class Control  {
   def mouseDown();
   def mouseUp();
 
-  var isMouseOn = false;
+  private var _isMouseOn = false;
+
+  def isMouseOn_= (v: Boolean){
+    _isMouseOn = v;
+  }
+
+  def isMouseOn = _isMouseOn;
 
   def checkMouseOn(x: Int, y: Int): Boolean = {
     (rect.isCordsWithin(x,y));

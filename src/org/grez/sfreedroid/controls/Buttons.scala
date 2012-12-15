@@ -132,14 +132,18 @@ class TextRectButton(val text: String, override val rect: Rect, val action: ()=>
     glEnable(GL_TEXTURE_2D);
   }
 
+  override def isMouseOn_= (v: Boolean){
+    super.isMouseOn_=(v);
+    if(v == false) isDown = false;
+  }
 
   def mouseDown() {
     isDown = true;
   }
 
   def mouseUp() {
+    if (isDown) action();
     isDown = false;
-    action();
   }
 
   def getAnimDrawableSubstitute: AnimDrawableSubstitute = new AnimDrawableSubstitute {
