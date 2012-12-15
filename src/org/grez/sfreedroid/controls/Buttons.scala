@@ -40,10 +40,13 @@ class TextRectButton(val text: String, override val rect: Rect, val action: ()=>
       drawPressedButtonBorder();
     } else {
       drawButtonBody(bodyColor);
-      drawButtonBorder(borderColor);
+      if(isMouseOn){
+        drawButtonBorder(selectedBorderColor);
+      }else {
+        drawButtonBorder(borderColor);
+      }
     }
     if (isMouseOn) {
-      drawButtonBorder(selectedBorderColor);
       drawText(selectedTextFont);
     } else {
       drawText(textFont);
