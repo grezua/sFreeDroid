@@ -26,12 +26,22 @@ class TextRectButton(val text: String, override val rect: Rect, val action: ()=>
   import rect._
 
   private val bodyColor = Color(0.8f, 0.5f, 0.2f);
+  private val borderColor = Color(0.5f, 0.5f, 0.5f);
+  private val pressedBodyColor = Color(0.675f, 0.5f, 0.2f);
   private val selectedBorderColor = Color(0.3f, 0.5f, 0.8f);
   private val textFont = "font05";
   private val selectedTextFont = "font05_blue";
 
+  protected var isDown = false;
+
   def draw() {
-    drawButtonBody(bodyColor);
+    if (isDown){
+      drawButtonBody(pressedBodyColor);
+      drawPressedButtonBorder();
+    } else {
+      drawButtonBody(bodyColor);
+      drawButtonBorder(borderColor);
+    }
     if (isMouseOn) {
       drawButtonBorder(selectedBorderColor);
       drawText(selectedTextFont);
@@ -45,39 +55,78 @@ class TextRectButton(val text: String, override val rect: Rect, val action: ()=>
    FontManager.drawText(leftTop.getX + 5, leftTop.getY + 5,text, font);
  }
 
+  protected def drawPressedButtonBorder(){
+
+    glDisable(GL_TEXTURE_2D);
+
+
+    glColor3f(0.3f, 0.3f, 0.3f);
+       glLineWidth(4f);
+       glBegin(GL_LINES);
+       {
+         glVertex2i(leftBottom.getX+2, leftBottom.getY);
+         glVertex2i(leftTop.getX+2, leftTop.getY);
+
+         glVertex2i(leftTop.getX, leftTop.getY+2);
+         glVertex2i(rightTop.getX, rightTop.getY+2);
+       };
+       glEnd();
+
+       glColor3f(0.5f, 0.5f, 0.5f);
+       glLineWidth(2f);
+       glBegin(GL_LINES);
+       {
+         glVertex2i(rightTop.getX, rightTop.getY);
+         glVertex2i(rightBottom.getX, rightBottom.getY);
+
+         glVertex2i(rightBottom.getX, rightBottom.getY);
+         glVertex2i(leftBottom.getX, leftBottom.getY);
+       };
+       glEnd();
+       glLineWidth(1f);
+       glEnable(GL_TEXTURE_2D);
+  }
+
   protected def drawButtonBorder(color: Color)  {
     import color._
 
     glColor3f(red, green, blue);
 
     glDisable(GL_TEXTURE_2D);
-     glBegin(GL_LINES);
-     glVertex2i(leftTop.getX, leftTop.getY);
-     glVertex2i(rightTop.getX, rightTop.getY);
+    //glPushAttrib(GL_LINE_WIDTH);
+    glLineWidth(2f);
+    glBegin(GL_LINES);
+    {
+      glVertex2i(leftTop.getX, leftTop.getY);
+      glVertex2i(rightTop.getX, rightTop.getY);
 
-     glVertex2i(rightTop.getX, rightTop.getY);
-     glVertex2i(rightBottom.getX, rightBottom.getY);
+      glVertex2i(rightTop.getX, rightTop.getY);
+      glVertex2i(rightBottom.getX, rightBottom.getY);
 
-     glVertex2i(rightBottom.getX, rightBottom.getY);
-     glVertex2i(leftBottom.getX, leftBottom.getY);
+      glVertex2i(rightBottom.getX, rightBottom.getY);
+      glVertex2i(leftBottom.getX, leftBottom.getY);
 
-     glVertex2i(leftBottom.getX, leftBottom.getY);
-     glVertex2i(leftTop.getX, leftTop.getY);
-
+      glVertex2i(leftBottom.getX, leftBottom.getY);
+      glVertex2i(leftTop.getX, leftTop.getY);
+    };
     glEnd();
+    glLineWidth(1f);
     glEnable(GL_TEXTURE_2D);
   }
 
- private def drawButtonBody(color: Color) {
+  protected def drawButtonBody(color: Color) {
     import color._
-    glColor3f(red, green, blue);
 
     glDisable(GL_TEXTURE_2D);
+    glColor3f(red, green, blue);
+
     glBegin(GL_QUADS);
-     glVertex2i(leftTop.getX, leftTop.getY);
-     glVertex2i(rightTop.getX, rightTop.getY);
-     glVertex2i(rightBottom.getX, rightBottom.getY);
-     glVertex2i(leftBottom.getX, leftBottom.getY);
+    {
+      glVertex2i(leftTop.getX, leftTop.getY);
+      glVertex2i(rightTop.getX, rightTop.getY);
+      glVertex2i(rightBottom.getX, rightBottom.getY);
+      glVertex2i(leftBottom.getX, leftBottom.getY);
+    };
     glEnd();
 
     glEnable(GL_TEXTURE_2D);
@@ -85,11 +134,12 @@ class TextRectButton(val text: String, override val rect: Rect, val action: ()=>
 
 
   def mouseDown() {
-    action();
+    isDown = true;
   }
 
   def mouseUp() {
-
+    isDown = false;
+    action();
   }
 
   def getAnimDrawableSubstitute: AnimDrawableSubstitute = new AnimDrawableSubstitute {
