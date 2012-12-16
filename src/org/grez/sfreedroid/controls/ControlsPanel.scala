@@ -25,7 +25,7 @@ class ControlsPanel {
 
  def getAnimList: List[AnimDrawableSubstitute] = items.flatMap(_.entity match {
     case d: AnimDrawableSubstitute => Some(d);
-    case b: TextRectButton => Some(b.getAnimDrawableSubstitute);
+    case b: TextActionButton => Some(b.getAnimDrawableSubstitute);
     case _ =>  None;
   });
 

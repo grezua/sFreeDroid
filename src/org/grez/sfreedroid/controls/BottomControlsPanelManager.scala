@@ -48,9 +48,14 @@ class BottomControlsPanelManager {
   val bottom_panel = new ToolbarPanelRect(Rect((0, 565), (1024, 775)), Color(0f, 0f, 0f));
   val toggleDbgButtonsPanel: ControlsPanel = new ControlsPanel;
 
-  toggleDbgButtonsPanel.addItem(TOGGLE_GRID_BTN,new TextButton("toggle grid", 40, 635, "toggle grid"),3);
-  toggleDbgButtonsPanel.addItem(TOGGLE_FPS_BTN,new TextButton("toggle fps", 40, 685, "toggle fps"),3 )
-  toggleDbgButtonsPanel.addItem(TOGGLE_MOUSE_POS_BTN,new TextButton("toggle mousepos", 40, 735, "toggle mousepos"),3)
+  toggleDbgButtonsPanel.addItem(TOGGLE_GRID_BTN, TextCMDButton("toggle grid", 40, 635, "toggle grid"),3);
+  toggleDbgButtonsPanel.addItem(TOGGLE_FPS_BTN, TextCMDButton("toggle fps", 40, 685, "toggle fps"),3 )
+  toggleDbgButtonsPanel.addItem(TOGGLE_MOUSE_POS_BTN, TextCMDButton("toggle mousepos", 40, 735, "toggle mousepos"),3)
+
+  val testButtons = new ButtonsSelectorPanel[Int](100,585,3,x => println("togleB clck: " + x));
+  testButtons.addButton("TG1",1,"b1");
+  testButtons.addButton("TG2",2,"b2");
+  testButtons.addButton("TG3",3,"b3");
 
   val tileControlsPanel = TileControlPanel;
 
@@ -59,7 +64,7 @@ class BottomControlsPanelManager {
 
 
   def animList: List[AnimDrawableSubstitute] = List(bottom_panel, hideToolbarBtnTop.getAnimDrawableSubstitute) ++
-    toggleDbgButtonsPanel.getAnimList ++ tileControlsPanel.getAnimList;
+    toggleDbgButtonsPanel.getAnimList ++ tileControlsPanel.getAnimList ++ testButtons.getAnimList;
 
 
   def addControlsPanel() {
@@ -69,13 +74,15 @@ class BottomControlsPanelManager {
       DrawableEntitiesManager.addEntities(
         DrawableEntity(BOTTOM_PANEL, bottom_panel, 2),
         DrawableEntity(HIDE_TOOLBAR_BTN, hideToolbarBtnTop, 3));
-      DrawableEntitiesManager.addEntities(toggleDbgButtonsPanel.getEntries ++ tileControlsPanel.getEntries :_*);
+      DrawableEntitiesManager.addEntities(toggleDbgButtonsPanel.getEntries ++
+        tileControlsPanel.getEntries ++ testButtons.getEntries :_*);
     })), 2)
   }
 
   def hideToolbarAction()  {
     DrawableEntitiesManager.deleteEntities(BOTTOM_PANEL, HIDE_TOOLBAR_BTN);
-    DrawableEntitiesManager.deleteEntities(toggleDbgButtonsPanel.getEntriesNames ++ tileControlsPanel.getEntriesNames :_*);
+    DrawableEntitiesManager.deleteEntities(toggleDbgButtonsPanel.getEntriesNames ++
+      tileControlsPanel.getEntriesNames ++ testButtons.getEntriesNames :_*);
     DrawableEntitiesManager.addEntity(BP_HIDE_ANIM, new ControlPanelHideAnimation(true, animList, (() => {
       DrawableEntitiesManager.deleteEntity(BP_HIDE_ANIM);
       DrawableEntitiesManager.addEntity(BOTTOM_PANEL, new ToolbarPanelRect(Rect((0, 760), (1024, 768)), Color(0f, 0f, 0f)), 2);
@@ -99,8 +106,6 @@ class ControlPanelHideAnimation(val direction: Boolean, val entities: List[AnimD
     entities.foreach(entity => entity.draw(0, stage))
   }
 }
-
-
 
 
 class ToolbarPanelRect(override val rect: Rect, color: Color) extends Control with TranslateAnim {
@@ -129,7 +134,6 @@ class ToolbarPanelRect(override val rect: Rect, color: Color) extends Control wi
       mouseY = y;
      super.checkMouseOn(x, y)
   }
-
 
   def mouseDown() {
     DrawableEntitiesManager.addEntity("Click_Anim", new ClickAnim(mouseX,mouseY,Color(0.8f,0.2f,0.0f),(() => DrawableEntitiesManager.deleteEntity("Click_Anim"))),3);

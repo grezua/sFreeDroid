@@ -49,4 +49,7 @@ case class Rect (leftTop:Point, rightTop:Point, rightBottom:Point, leftBottom:Po
         glVertex2i(leftBottom.getX,  leftBottom.getY);
         glVertex2i(leftTop.getX,     leftTop.getY);
   }
+
+  def width: Int = rightTop.getX - leftTop.getX;
+  def height: Int = leftBottom.getY - leftTop.getY;
 }

@@ -93,8 +93,8 @@ object TileControlPanel extends ControlsPanel {
 
 
   items = List(
-    DrawableEntity(NEXT_TILE_BTN, new TextButton("->", 890, 650, "nexttile"), 3),
-    DrawableEntity(PREV_TILE_BTN, new TextButton("<-", 690, 650, "prevtile"), 3),
+    DrawableEntity(NEXT_TILE_BTN,  TextCMDButton("->", 890, 650, "nexttile"), 3),
+    DrawableEntity(PREV_TILE_BTN,  TextCMDButton("<-", 690, 650, "prevtile"), 3),
     DrawableEntity(TILE_RECT, tileRect, 3),
     DrawableEntity(LOX_PLUS_BTN, new SmallTextActionButton("+", 765, 575, (() => tileRect.inc_lox())), 3),
     DrawableEntity(LOX_MINUS_BTN, new SmallTextActionButton("-", 765, 600, (() => tileRect.dec_lox())), 3),
