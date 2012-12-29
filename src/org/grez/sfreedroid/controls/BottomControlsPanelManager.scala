@@ -52,19 +52,21 @@ class BottomControlsPanelManager {
   toggleDbgButtonsPanel.addItem(TOGGLE_FPS_BTN, TextCMDButton("toggle fps", 40, 685, "toggle fps"),3 )
   toggleDbgButtonsPanel.addItem(TOGGLE_MOUSE_POS_BTN, TextCMDButton("toggle mousepos", 40, 735, "toggle mousepos"),3)
 
-  val testButtons = new ButtonsSelectorPanel[Int](100,585,3,x => println("togleB clck: " + x));
-  testButtons.addButton("TG1",1,"b1");
-  testButtons.addButton("TG2",2,"b2");
-  testButtons.addButton("TG3",3,"b3");
-
   val tileControlsPanel = TileControlPanel;
+
+  val testButtons = new ButtonsPanelsSwitcher(100,585,3);
+  testButtons.addPanel("TG1","DBG_INFO",toggleDbgButtonsPanel);
+  testButtons.addPanel("TG2","MAP EDIT",tileControlsPanel);
+  //testButtons.addButton("TG3",3,"b3");
+
+
 
   val hideToolbarBtnTop = new TextActionButton("^", 500, 540, hideToolbarAction);
   val hideToolbarBtnBottom = new TextActionButton("^", 500, 740, addControlsPanel);
 
 
   def animList: List[AnimDrawableSubstitute] = List(bottom_panel, hideToolbarBtnTop.getAnimDrawableSubstitute) ++
-    toggleDbgButtonsPanel.getAnimList ++ tileControlsPanel.getAnimList ++ testButtons.getAnimList;
+    testButtons.getAnimList;
 
 
   def addControlsPanel() {
@@ -74,15 +76,13 @@ class BottomControlsPanelManager {
       DrawableEntitiesManager.addEntities(
         DrawableEntity(BOTTOM_PANEL, bottom_panel, 2),
         DrawableEntity(HIDE_TOOLBAR_BTN, hideToolbarBtnTop, 3));
-      DrawableEntitiesManager.addEntities(toggleDbgButtonsPanel.getEntries ++
-        tileControlsPanel.getEntries ++ testButtons.getEntries :_*);
+      DrawableEntitiesManager.addEntities(testButtons.getEntries :_*);
     })), 2)
   }
 
   def hideToolbarAction()  {
     DrawableEntitiesManager.deleteEntities(BOTTOM_PANEL, HIDE_TOOLBAR_BTN);
-    DrawableEntitiesManager.deleteEntities(toggleDbgButtonsPanel.getEntriesNames ++
-      tileControlsPanel.getEntriesNames ++ testButtons.getEntriesNames :_*);
+    DrawableEntitiesManager.deleteEntities(testButtons.getEntriesNames :_*);
     DrawableEntitiesManager.addEntity(BP_HIDE_ANIM, new ControlPanelHideAnimation(true, animList, (() => {
       DrawableEntitiesManager.deleteEntity(BP_HIDE_ANIM);
       DrawableEntitiesManager.addEntity(BOTTOM_PANEL, new ToolbarPanelRect(Rect((0, 760), (1024, 768)), Color(0f, 0f, 0f)), 2);
@@ -140,5 +140,36 @@ class ToolbarPanelRect(override val rect: Rect, color: Color) extends Control wi
   }
 
   def mouseUp() {}
+}
+
+class ButtonsPanelsSwitcher(val x: Int, val y: Int, val layer: Int){
+
+  private val buttonsPanel = new ButtonsSelectorPanel[ControlsPanel](x,y,layer,onChangeHandler);
+  private var currentPanel: Option[ControlsPanel] = None;
+
+  protected def onChangeHandler(panel: ControlsPanel){
+    currentPanel.map(removePanel(_));
+    currentPanel = Some(panel);
+    addPanel(panel);
+  }
+
+  private def removePanel(p: ControlsPanel){
+    DrawableEntitiesManager.deleteEntities(p.getEntriesNames :_*);
+  }
+
+  private def addPanel(p:ControlsPanel){
+    DrawableEntitiesManager.addEntities(p.getEntries :_*);
+  }
+
+  def getAnimList = buttonsPanel.getAnimList ++  (if (currentPanel.isDefined) currentPanel.get.getAnimList else None);
+
+  def getEntries = buttonsPanel.getEntries ++ (if (currentPanel.isDefined) currentPanel.get.getEntries else None);
+
+  def getEntriesNames = buttonsPanel.getEntriesNames ++ (if (currentPanel.isDefined) currentPanel.get.getEntriesNames else None);
+
+  def addPanel(buttonName: String, buttonText: String, panel: ControlsPanel){
+    buttonsPanel.addButton(buttonName,panel,buttonText);
+  }
+
 }
 

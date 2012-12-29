@@ -1,5 +1,7 @@
 package org.grez.sfreedroid.controls
 
+import org.grez.sfreedroid.DrawableEntitiesManager
+
 /**
  * Created with IntelliJ IDEA.
  * User: grez
@@ -43,8 +45,6 @@ class ToggleButtonOnPanel[T](val value: T, override val text:String, override va
 }
 
 class ButtonsSelectorPanel[T] (val x: Int, val y: Int, val layer: Int, onChangeHandler:(T)=>Unit ) extends ControlsPanel{
-
-
 
   private var allButtons: Map[T,ToggleButtonOnPanel[T]] = Map();
   var curX = x;
